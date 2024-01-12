@@ -1,0 +1,47 @@
+/* src/style/headerStyle.css */
+.my-custom-header {
+    width: 100%; /* Ensure the header takes full width */
+    box-sizing: border-box; /* Include padding and border in the element's width */
+    background-color: var(--jp-layout-color1); /* JupyterLab main background color */
+    color: var(--jp-ui-font-color1); /* JupyterLab default font color */
+    border-top: 1px solid var(--jp-border-color2);
+    border-bottom: 1px solid var(--jp-border-color2);
+    padding: 4px 8px; /* Consistent padding with JupyterLab cells */
+    font-family: var(--jp-ui-font-family); /* JupyterLab font */
+    font-size: var(--jp-ui-font-size1); /* Consistent font size with JupyterLab */
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    position: relative; /* Add relative positioning */
+    /* margin-top: 50px; */
+    margin-bottom: 10px;
+}
+/* .my-custom-header, .my-custom-header * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+} */
+
+.my-custom-header span {
+    margin-right: 6px; /* margin-right: auto; Push buttons to the right */
+}
+
+.my-custom-header button {
+    background-color: var(--jp-brand-color1); /* JupyterLab brand color */
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    margin-left: 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease; /* Smooth transition for background color */
+}
+
+.my-custom-header button:hover {
+    background-color: var(--jp-brand-color2); /* Slightly lighter on hover */
+}
+
+.my-custom-header button:active {
+    background-color: var(--jp-brand-color3); /* Slightly darker when active/pressed */
+}
