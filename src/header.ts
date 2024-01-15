@@ -10,9 +10,12 @@ import { NotebookPanel } from '@jupyterlab/notebook';
  * @param headerText The text content for the header.
  * @returns The header element.
  */
-export function createHeaderElement(headerText: string): HTMLElement {
+const defaultCategory = 'Import';
+
+export function createHeaderElement(headerText: string, category: string): HTMLElement {
   const headerElement = document.createElement('div');
   headerElement.className = 'my-custom-header';
+  headerElement.dataset.category = category; 
 
   // Create the editable text span
   const textSpan = document.createElement('span');
@@ -23,10 +26,11 @@ export function createHeaderElement(headerText: string): HTMLElement {
   const editButton = document.createElement('button');
   editButton.textContent = 'Edit';
   editButton.onclick = () => {
-    // Prompt to edit the header text
+    const newCategory = prompt('Enter category (Import, Wrangle, Explore, Model, Evaluate):', headerElement.dataset.category);
     const newText = prompt('Edit header text:', textSpan.textContent || '');
-    if (newText !== null) {
+    if (newText !== null && newCategory !== null) {
       textSpan.textContent = newText;
+      headerElement.dataset.category = newCategory; // Update the category
     }
   };
   headerElement.appendChild(editButton);
@@ -56,7 +60,7 @@ export function addHeaderToCell(notebookPanel: NotebookPanel, headerText: string
           if (node instanceof HTMLElement && node.classList.contains('jp-CodeCell')) {
             const cell = notebookPanel.content.widgets.find(widget => widget.node === node);
             if (cell && !node.querySelector('.my-custom-header')) {
-              const headerElement = createHeaderElement(headerText);
+              const headerElement = createHeaderElement(headerText, defaultCategory);
               node.insertBefore(headerElement, node.firstChild);
             }
           }
@@ -70,7 +74,7 @@ export function addHeaderToCell(notebookPanel: NotebookPanel, headerText: string
   // Initial call to add headers to all existing code cells
   notebookPanel.content.widgets.forEach(cell => {
     if (cell.model.type === 'code' && !cell.node.querySelector('.my-custom-header')) {
-      const headerElement = createHeaderElement(headerText);
+      const headerElement = createHeaderElement(headerText, defaultCategory);
       cell.node.insertBefore(headerElement, cell.node.firstChild);
     }
   });

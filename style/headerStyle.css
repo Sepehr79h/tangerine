@@ -45,3 +45,30 @@
 .my-custom-header button:active {
     background-color: var(--jp-brand-color3); /* Slightly darker when active/pressed */
 }
+
+
+/* style/headerStyle.css or style/visualizationStyle.css */
+
+.tangerine-visualization-panel {
+    position: fixed; /* or absolute, depending on your needs */
+    bottom: 0;
+    right: 0;
+    width: 300px; /* Adjust the width as needed */
+    height: 100%;
+    background-color: #fff; /* Choose a theme-appropriate background */
+    overflow-y: auto; /* If the panel might overflow */
+    border-left: 1px solid #ccc; /* Add a border if it's a sidebar */
+    z-index: 10; /* Ensure it's above other elements */
+  }
+  
+  .tangerine-visualization-rectangle {
+    /* Styles as defined in the createRectangleForHeader function */
+    cursor: pointer; /* Change cursor to pointer to indicate clickability */
+    user-select: none; /* Prevent text selection */
+    /* Add any other styles for hover effects, active state, etc. */
+  }
+  
+  .tangerine-visualization-rectangle:hover {
+    background-color: darken the color; /* Example to darken the color on hover */
+  }
+  
