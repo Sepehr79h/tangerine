@@ -46,11 +46,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
     notebookTracker.widgetAdded.connect((sender, notebookPanel) => {
       notebookPanel.context.ready.then(() => {
         if (notebookPanel.model) {
-          addHeaderToCell(notebookPanel, 'My Custom Header');
-          // We no longer add the visualization panel here directly
-          // The visualization panel will be created when the user selects the menu item
+          // Existing setup code
+          addHeaderToCell(notebookPanel, 'My Custom Header', app, updateVisualizationPanel);
           notebookPanel.model.contentChanged.connect(() => {
             updateVisualizationPanel(notebookPanel, app);
+          });
+          // Add listener for cell changes (addition and removal)
+          notebookPanel.model.cells.changed.connect((sender, args) => {
+            if (args.type === 'add' || args.type === 'remove') { // Check for both add and remove types
+              updateVisualizationPanel(notebookPanel, app);
+            }
           });
         }
       });

@@ -4,6 +4,7 @@
 
 // Import necessary interfaces from JupyterLab
 import { NotebookPanel } from '@jupyterlab/notebook';
+import { JupyterFrontEnd } from '@jupyterlab/application';
 
 /**
  * Creates a header element with provided text.
@@ -12,7 +13,7 @@ import { NotebookPanel } from '@jupyterlab/notebook';
  */
 const defaultCategory = 'Import';
 
-export function createHeaderElement(headerText: string, category: string): HTMLElement {
+export function createHeaderElement(headerText: string, category: string, notebookPanel: NotebookPanel, app: JupyterFrontEnd, updateVisualization: (notebookPanel: NotebookPanel, app: JupyterFrontEnd) => void): HTMLElement {
   const headerElement = document.createElement('div');
   headerElement.className = 'my-custom-header';
   headerElement.dataset.category = category; 
@@ -31,6 +32,7 @@ export function createHeaderElement(headerText: string, category: string): HTMLE
     if (newText !== null && newCategory !== null) {
       textSpan.textContent = newText;
       headerElement.dataset.category = newCategory; // Update the category
+      updateVisualization(notebookPanel, app);
     }
   };
   headerElement.appendChild(editButton);
@@ -40,6 +42,7 @@ export function createHeaderElement(headerText: string, category: string): HTMLE
   removeButton.textContent = 'Remove';
   removeButton.onclick = () => {
     headerElement.remove();
+    updateVisualization(notebookPanel, app);
   };
   headerElement.appendChild(removeButton);
 
@@ -51,7 +54,7 @@ export function createHeaderElement(headerText: string, category: string): HTMLE
  * @param notebookPanel The notebook panel to which headers are to be added.
  * @param headerText The text for the headers.
  */
-export function addHeaderToCell(notebookPanel: NotebookPanel, headerText: string) {
+export function addHeaderToCell(notebookPanel: NotebookPanel, headerText: string, app: JupyterFrontEnd, updateVisualization: (notebookPanel: NotebookPanel, app: JupyterFrontEnd) => void) {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === 'childList') {
@@ -60,8 +63,9 @@ export function addHeaderToCell(notebookPanel: NotebookPanel, headerText: string
           if (node instanceof HTMLElement && node.classList.contains('jp-CodeCell')) {
             const cell = notebookPanel.content.widgets.find(widget => widget.node === node);
             if (cell && !node.querySelector('.my-custom-header')) {
-              const headerElement = createHeaderElement(headerText, defaultCategory);
+              const headerElement = createHeaderElement(headerText, defaultCategory, notebookPanel, app, updateVisualization);
               node.insertBefore(headerElement, node.firstChild);
+              updateVisualization(notebookPanel, app);
             }
           }
         });
@@ -74,7 +78,7 @@ export function addHeaderToCell(notebookPanel: NotebookPanel, headerText: string
   // Initial call to add headers to all existing code cells
   notebookPanel.content.widgets.forEach(cell => {
     if (cell.model.type === 'code' && !cell.node.querySelector('.my-custom-header')) {
-      const headerElement = createHeaderElement(headerText, defaultCategory);
+      const headerElement = createHeaderElement(headerText, defaultCategory, notebookPanel, app, updateVisualization);
       cell.node.insertBefore(headerElement, cell.node.firstChild);
     }
   });
