@@ -1,8 +1,12 @@
 import { NotebookPanel } from '@jupyterlab/notebook';
 import { Widget } from '@lumino/widgets';
 
+
+export type CategoryColorType = {
+  [key: string]: string; // This line tells TypeScript that any string key will return a string
+};
 // Define a mapping from header categories to colors
-const categoryColors = {
+export const categoryColors: CategoryColorType = {
   'Import': '#007bff',
   'Wrangle': '#28a745',
   'Explore': '#6f42c1',

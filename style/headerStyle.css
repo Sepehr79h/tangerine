@@ -27,6 +27,21 @@
     margin-right: 6px; /* margin-right: auto; Push buttons to the right */
 }
 
+.my-custom-header button.category-button {
+    background-color: transparent; /* Make the button background transparent */
+    border: 2px solid; /* Set the border width */
+    /* The border color will be set dynamically in JavaScript to match the category color */
+    color: #333; /* Set the text color; choose a color that matches your design */
+    padding: 4px 8px;
+    border-radius: 5px; /* Rounded corners for the button */
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.my-custom-header button.category-button:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Slight background color on hover for feedback */
+}
+
 .my-custom-header button {
     background-color: var(--jp-brand-color1); /* JupyterLab brand color */
     color: white;
@@ -45,6 +60,14 @@
 .my-custom-header button:active {
     background-color: var(--jp-brand-color3); /* Slightly darker when active/pressed */
 }
+
+.my-custom-header select {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: white;
+    cursor: pointer;
+  }
 
 
 /* style/headerStyle.css or style/visualizationStyle.css */

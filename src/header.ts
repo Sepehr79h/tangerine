@@ -5,6 +5,7 @@
 // Import necessary interfaces from JupyterLab
 import { NotebookPanel } from '@jupyterlab/notebook';
 import { JupyterFrontEnd } from '@jupyterlab/application';
+import { categoryColors } from './visualization';
 
 /**
  * Creates a header element with provided text.
@@ -16,22 +17,52 @@ const defaultCategory = 'Import';
 export function createHeaderElement(headerText: string, category: string, notebookPanel: NotebookPanel, app: JupyterFrontEnd, updateVisualization: (notebookPanel: NotebookPanel, app: JupyterFrontEnd) => void): HTMLElement {
   const headerElement = document.createElement('div');
   headerElement.className = 'my-custom-header';
-  headerElement.dataset.category = category; 
+  headerElement.dataset.category = category;
 
   // Create the editable text span
   const textSpan = document.createElement('span');
   textSpan.textContent = headerText;
   headerElement.appendChild(textSpan);
 
-  // Create edit button
+  // Create the dropdown for category selection
+  const categoryDropdown = document.createElement('select');
+  Object.keys(categoryColors).forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat;
+    option.textContent = cat;
+    categoryDropdown.appendChild(option);
+  });
+  categoryDropdown.value = category;
+  categoryDropdown.style.display = 'none'; // Initially hide the dropdown
+  categoryDropdown.onchange = () => {
+    const newCategory = categoryDropdown.value;
+    headerElement.dataset.category = newCategory;
+    // categoryButton.textContent = newCategory;
+    // categoryButton.style.borderColor = categoryColors[newCategory];
+    categoryButton.style.backgroundColor = categoryColors[newCategory];
+    categoryDropdown.style.display = 'none'; // Hide the dropdown after selection
+    updateVisualization(notebookPanel, app);
+  };
+  headerElement.appendChild(categoryDropdown);
+
+  // Create the category button
+  const categoryButton = document.createElement('button');
+  // categoryButton.className = 'category-button';
+  // categoryButton.textContent = category; // You can also set the button text to the category name
+  // categoryButton.style.borderColor = categoryColors[category];
+  categoryButton.style.backgroundColor = categoryColors[category];
+  categoryButton.onclick = () => {
+    categoryDropdown.style.display = 'block'; // Show the dropdown when button is clicked
+  };
+  headerElement.appendChild(categoryButton);
+
+  // Modify the edit button to only edit text
   const editButton = document.createElement('button');
-  editButton.textContent = 'Edit';
+  editButton.textContent = 'Edit Text';
   editButton.onclick = () => {
-    const newCategory = prompt('Enter category (Import, Wrangle, Explore, Model, Evaluate):', headerElement.dataset.category);
     const newText = prompt('Edit header text:', textSpan.textContent || '');
-    if (newText !== null && newCategory !== null) {
+    if (newText !== null) {
       textSpan.textContent = newText;
-      headerElement.dataset.category = newCategory; // Update the category
       updateVisualization(notebookPanel, app);
     }
   };
