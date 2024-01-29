@@ -11,6 +11,7 @@ import { Widget, Menu } from '@lumino/widgets';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { ICommandPalette } from '@jupyterlab/apputils';
+import { TreeManager } from './TreeManager';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab_tangerine:plugin',
@@ -43,18 +44,39 @@ const plugin: JupyterFrontEndPlugin<void> = {
     mainMenu.addMenu(tangerineMenu);
     tangerineMenu.addItem({ command: commandID });
 
+    const treeManager = new TreeManager();
+
     notebookTracker.widgetAdded.connect((sender, notebookPanel) => {
       notebookPanel.context.ready.then(() => {
         if (notebookPanel.model) {
           // Existing setup code
-          addHeaderToCell(notebookPanel, 'My Custom Header', app, updateVisualizationPanel);
+          const cellHeaderText = 'My Custom Header';
+          addHeaderToCell(notebookPanel, cellHeaderText, app, updateVisualizationPanel);
           notebookPanel.model.contentChanged.connect(() => {
             updateVisualizationPanel(notebookPanel, app);
           });
           // Add listener for cell changes (addition and removal)
           notebookPanel.model.cells.changed.connect((sender, args) => {
-            if (args.type === 'add' || args.type === 'remove') { // Check for both add and remove types
+            if (args.type === 'add') {
+              args.newValues.forEach(cell => {
+                // Assuming JupyterLab provides a unique ID for each cell, use that as the identifier
+                const cellId = cell.id;
+                console.log(cellId);
+                treeManager.addNode(args.newIndex, cellId, cellHeaderText, null);
+                console.log(treeManager.indexIdMap);
+                console.log(treeManager.getTreeSnapshot());
+              });
               updateVisualizationPanel(notebookPanel, app);
+              //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
+            }
+          
+            if (args.type === 'remove') {
+              console.log(args);
+              treeManager.removeNode(args.oldIndex);
+              console.log(treeManager.indexIdMap);
+              console.log(treeManager.getTreeSnapshot());
+              updateVisualizationPanel(notebookPanel, app);
+              //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
             }
           });
         }
