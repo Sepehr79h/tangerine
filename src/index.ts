@@ -12,6 +12,10 @@ import { Widget, Menu } from '@lumino/widgets';
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { ICommandPalette } from '@jupyterlab/apputils';
 import { TreeManager } from './TreeManager';
+// import { createTreeVisualization } from './TreeVisualization';
+// import ReactDOM from 'react-dom';
+import { TreeVisualizationWidget } from './TreeVisualization'; // Adjust the path as needed
+
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab_tangerine:plugin',
@@ -26,6 +30,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     console.log('JupyterLab extension jupyterlab_tangerine is activated!');
 
     const commandID = 'tangerine:open-visualization';
+    const treeCommandID = 'tangerine:open-tree-visualization';
+
     app.commands.addCommand(commandID, {
       label: 'Open Tangerine Visualization',
       isVisible: () => notebookTracker.currentWidget !== null,
@@ -33,6 +39,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
         const currentNotebookPanel = notebookTracker.currentWidget;
         if (currentNotebookPanel) {
           updateVisualizationPanel(currentNotebookPanel, app);
+        }
+      }
+    })
+    app.commands.addCommand(treeCommandID, {
+      label: 'Open Tree Visualization',
+      isVisible: () => notebookTracker.currentWidget !== null,
+      execute: () => {
+        const currentNotebookPanel = notebookTracker.currentWidget;
+        if (currentNotebookPanel) {
+          updateTreeVisualizationPanel(currentNotebookPanel, treeManager, app);
         }
       }
     });
@@ -43,6 +59,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     tangerineMenu.title.label = 'Tangerine';
     mainMenu.addMenu(tangerineMenu);
     tangerineMenu.addItem({ command: commandID });
+    tangerineMenu.addItem({ command: treeCommandID });
 
     const treeManager = new TreeManager();
 
@@ -65,7 +82,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
                 treeManager.addNode(args.newIndex, cellId, cellHeaderText, null);
                 console.log(treeManager.indexIdMap);
                 console.log(treeManager.getTreeSnapshot());
+                //createTreeVisualization(notebookPanel, treeManager, app);
               });
+              updateTreeVisualizationPanel(notebookPanel, treeManager, app);
               updateVisualizationPanel(notebookPanel, app);
               //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
             }
@@ -75,6 +94,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
               treeManager.removeNode(args.oldIndex);
               console.log(treeManager.indexIdMap);
               console.log(treeManager.getTreeSnapshot());
+              updateTreeVisualizationPanel(notebookPanel, treeManager, app);
               updateVisualizationPanel(notebookPanel, app);
               //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
             }
@@ -99,4 +119,25 @@ function updateVisualizationPanel(notebookPanel: NotebookPanel, app: JupyterFron
   // Add the new visualization panel to the JupyterLab shell
   app.shell.add(visualizationPanel, 'main', { mode: 'split-bottom' });
 }
+
+function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeManager: TreeManager, app: JupyterFrontEnd): void {
+  const treePanelId = `tangerine-tree-visualization-${notebookPanel.id}`;
+  let treePanel = Array.from(app.shell.widgets()).find(w => w.id === treePanelId) as TreeVisualizationWidget | undefined;
+
+  const treeData = treeManager.getTreeSnapshot();
+
+  if (treePanel) {
+    // Update the existing panel with the new tree data
+    treePanel.updateTreeData(treeData);
+  } else {
+    // Create a new panel if it doesn't exist
+    treePanel = new TreeVisualizationWidget(treeData);
+    treePanel.id = treePanelId;
+    app.shell.add(treePanel, 'main', { mode: 'split-right' });
+  }
+}
+
+
+
+
 export default plugin;
