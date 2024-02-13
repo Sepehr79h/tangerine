@@ -1,29 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import ReactFlow, {
-  Node,
-  Edge,
-  MiniMap,
-  Controls,
-  Background,
-} from 'react-flow-renderer';
-import { Widget } from '@lumino/widgets';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+} from 'react-flow-renderer';
+import dagre from '@dagrejs/dagre';
+import { Widget } from '@lumino/widgets';
 
-export interface TreeNode {
-  id: string;
-  label: string;
-  children: TreeNode[];
-  parent: TreeNode | null;
-}
+// Initialize the dagre graph for layout calculations
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+const nodeWidth = 172;
+const nodeHeight = 36;
+
+// Function to apply Dagre layout to nodes and edges
+const getLayoutedElements = (nodes: any[], edges: any[], direction = 'TB') => {
+  dagreGraph.setGraph({ rankdir: direction });
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+  dagre.layout(dagreGraph);
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = direction === 'LR' ? 'left' : 'top';
+    node.sourcePosition = direction === 'LR' ? 'right' : 'bottom';
+    node.position = { x: nodeWithPosition.x - nodeWidth / 2, y: nodeWithPosition.y - nodeHeight / 2 };
+    node.data = { label: `Node ${node.id}` };
+  });
+  return { nodes, edges };
+};
 
 export interface TreeVisualizationProps {
-  treeData: TreeNode[];
+  treeData: {
+    nodes: any[]; // Adjust type to match React Flow's Node type
+    edges: any[]; // Adjust type to match React Flow's Edge type
+  };
 }
 
 class TreeVisualizationWidget extends Widget {
   private treeContainer: HTMLDivElement;
 
-  constructor(treeData: TreeNode[]) {
+  constructor(treeData: TreeVisualizationProps['treeData']) {
     super();
     this.addClass('tangerine-tree-visualization-panel');
     this.id = 'tangerine-tree-visualization-panel';
@@ -37,11 +60,11 @@ class TreeVisualizationWidget extends Widget {
     this.renderReactComponent(treeData);
   }
 
-  renderReactComponent(treeData: TreeNode[]) {
+  renderReactComponent(treeData: TreeVisualizationProps['treeData']) {
     ReactDOM.render(<TreeVisualization treeData={treeData} />, this.treeContainer);
   }
 
-  updateTreeData(treeData: TreeNode[]) {
+  updateTreeData(treeData: TreeVisualizationProps['treeData']) {
     this.renderReactComponent(treeData);
   }
 
@@ -52,51 +75,26 @@ class TreeVisualizationWidget extends Widget {
 }
 
 const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData }) => {
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-
-  const convertToFlowElements = (treeNodes: TreeNode[], parentId?: string) => {
-    let nodes: Node[] = [];
-    let edges: Edge[] = [];
-
-    treeNodes.forEach((node, index) => {
-      const position = { x: 0, y: index * 100 };
-
-      nodes.push({
-        id: node.id,
-        type: 'default',
-        data: { label: node.label },
-        position,
-      });
-
-      if (parentId) {
-        edges.push({
-          id: `e${parentId}-${node.id}`,
-          source: parentId,
-          target: node.id,
-          animated: true,
-        });
-      }
-
-      if (node.children.length > 0) {
-        const childElements = convertToFlowElements(node.children, node.id);
-        nodes = [...nodes, ...childElements.nodes];
-        edges = [...edges, ...childElements.edges];
-      }
-    });
-
-    return { nodes, edges };
-  };
+  // Use state hooks for nodes and edges
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   useEffect(() => {
-    const { nodes, edges } = convertToFlowElements(treeData);
-    setNodes(nodes);
-    setEdges(edges);
-  }, [treeData]);
+    // Apply Dagre layout when treeData updates
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(treeData.nodes, treeData.edges);
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+  }, [treeData, setNodes, setEdges]);
 
   return (
     <div style={{ height: 800 }}>
-      <ReactFlow nodes={nodes} edges={edges} fitView>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        fitView
+      >
         <MiniMap />
         <Controls />
         <Background />
@@ -106,4 +104,3 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData }) => {
 };
 
 export { TreeVisualization, TreeVisualizationWidget };
-;

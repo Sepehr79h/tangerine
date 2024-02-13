@@ -15,6 +15,7 @@ import { TreeManager } from './TreeManager';
 // import { createTreeVisualization } from './TreeVisualization';
 // import ReactDOM from 'react-dom';
 import { TreeVisualizationWidget } from './TreeVisualization'; // Adjust the path as needed
+import axios from 'axios';
 
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -120,22 +121,61 @@ function updateVisualizationPanel(notebookPanel: NotebookPanel, app: JupyterFron
   app.shell.add(visualizationPanel, 'main', { mode: 'split-bottom' });
 }
 
-function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeManager: TreeManager, app: JupyterFrontEnd): void {
+// function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeManager: TreeManager, app: JupyterFrontEnd): void {
+//   console.log(notebookPanel.context.path);
+//   const treePanelId = `tangerine-tree-visualization-${notebookPanel.id}`;
+//   let treePanel = Array.from(app.shell.widgets()).find(w => w.id === treePanelId) as TreeVisualizationWidget | undefined;
+
+//   const treeData = treeManager.getTreeSnapshot();
+//   console.log(treeData)
+
+//   if (treePanel) {
+//     // Update the existing panel with the new tree data
+//     treePanel.updateTreeData(treeData);
+//   } else {
+//     // Create a new panel if it doesn't exist
+//     treePanel = new TreeVisualizationWidget(treeData);
+//     treePanel.id = treePanelId;
+//     app.shell.add(treePanel, 'main', { mode: 'split-right' });
+//   }
+// }
+
+async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeManager: TreeManager, app: JupyterFrontEnd): Promise<void> {
+  console.log("Updating tree visualization panel")
+  const notebookPath = notebookPanel.context.path; // Get the current notebook path
+  console.log(notebookPath)
   const treePanelId = `tangerine-tree-visualization-${notebookPanel.id}`;
   let treePanel = Array.from(app.shell.widgets()).find(w => w.id === treePanelId) as TreeVisualizationWidget | undefined;
 
-  const treeData = treeManager.getTreeSnapshot();
+  // Send the notebook path to the backend and fetch the tree data
+  try {
+    const response = await axios.post('http://127.0.0.1:5001/get-tree-structure', {
+      filepath: notebookPath
+    }, {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 50000 // or a value that suits your backend's response time
+    });
 
-  if (treePanel) {
-    // Update the existing panel with the new tree data
-    treePanel.updateTreeData(treeData);
-  } else {
-    // Create a new panel if it doesn't exist
-    treePanel = new TreeVisualizationWidget(treeData);
-    treePanel.id = treePanelId;
-    app.shell.add(treePanel, 'main', { mode: 'split-right' });
+    const treeData = response.data;
+    console.log(treeData);
+    //treeManager.buildTreeFromData(treeData.nodes, treeData.edges);
+    //const treeNodeStructure = treeManager.getTreeSnapshot();
+    //console.log(treeNodeStructure)
+
+    if (treePanel) {
+      // Update the existing panel with the new tree data
+      treePanel.updateTreeData(treeData);
+    } else {
+      // Create a new panel if it doesn't exist and add it to the JupyterLab shell
+      treePanel = new TreeVisualizationWidget(treeData);
+      treePanel.id = treePanelId;
+      app.shell.add(treePanel, 'main', { mode: 'split-right' });
+    }
+  } catch (error) {
+    console.error("Failed to fetch tree data:", error);
   }
 }
+
 
 
 

@@ -75,4 +75,30 @@ export class TreeManager {
   }
 
   // Additional methods to handle the graph structure could be added here...
+  buildTreeFromData(nodes: Array<{id: string}>, edges: Array<{source: string, target: string}>): void {
+    this.nodes.clear(); // Clear existing nodes
+    this.indexIdMap.clear(); // Clear existing index map
+
+    // First, create all nodes
+    nodes.forEach((nodeData, index) => {
+        const node: TreeNode = {
+            id: nodeData.id,
+            label: `Node ${nodeData.id}`, // Modify as needed
+            children: [],
+            parent: null
+        };
+        this.nodes.set(node.id, node);
+        this.indexIdMap.set(index, node.id); // Assuming the index can still be useful
+    });
+
+    // Then, establish parent-child relationships based on edges
+    edges.forEach(edge => {
+        const parentNode = this.nodes.get(edge.source);
+        const childNode = this.nodes.get(edge.target);
+        if (parentNode && childNode) {
+            childNode.parent = parentNode;
+            parentNode.children.push(childNode);
+        }
+    });
+}
 }
