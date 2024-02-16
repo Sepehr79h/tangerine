@@ -85,7 +85,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
                 console.log(treeManager.getTreeSnapshot());
                 //createTreeVisualization(notebookPanel, treeManager, app);
               });
-              updateTreeVisualizationPanel(notebookPanel, treeManager, app);
+              //updateTreeVisualizationPanel(notebookPanel, treeManager, app);
               updateVisualizationPanel(notebookPanel, app);
               //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
             }
@@ -95,7 +95,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
               treeManager.removeNode(args.oldIndex);
               console.log(treeManager.indexIdMap);
               console.log(treeManager.getTreeSnapshot());
-              updateTreeVisualizationPanel(notebookPanel, treeManager, app);
+              //updateTreeVisualizationPanel(notebookPanel, treeManager, app);
               updateVisualizationPanel(notebookPanel, app);
               //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
             }
@@ -148,8 +148,9 @@ async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeMa
   let treePanel = Array.from(app.shell.widgets()).find(w => w.id === treePanelId) as TreeVisualizationWidget | undefined;
 
   // Send the notebook path to the backend and fetch the tree data
+  console.log("Fetching tree data for notebook: ", notebookPath)
   try {
-    const response = await axios.post('http://127.0.0.1:5001/get-tree-structure', {
+    const response = await axios.post('http://127.0.0.1:5002/get-tree-structure', {
       filepath: notebookPath
     }, {
       headers: { 'Content-Type': 'application/json' },
