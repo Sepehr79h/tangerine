@@ -9,12 +9,20 @@ import ReactFlow, {
 } from 'react-flow-renderer';
 import dagre from '@dagrejs/dagre';
 import { Widget } from '@lumino/widgets';
+// import { toggleCollapse } from './TreeUtils'; // Adjust the path as needed
 
 // Initialize the dagre graph for layout calculations
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 172;
 const nodeHeight = 36;
+const categoryColorMap: { [key: string]: string } = {
+  import: 'green',
+  wrangle: 'blue',
+  explore: 'orange',
+  model: 'red',
+  evaluate: 'purple'
+};
 
 // Function to apply Dagre layout to nodes and edges
 const getLayoutedElements = (nodes: any[], edges: any[], direction = 'TB') => {
@@ -81,10 +89,31 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData }) => {
 
   useEffect(() => {
     // Apply Dagre layout when treeData updates
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(treeData.nodes, treeData.edges);
+    var { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(treeData.nodes, treeData.edges);
+    // Add categories and styles here before setting nodes and edges
+    console.log(layoutedNodes);
+    layoutedNodes = layoutedNodes.map(node => {
+      // Assume your backend adds a `category` field to each node
+      // node.data.category = 'import'; 
+      const color = categoryColorMap[node.category];
+      return {
+        ...node,
+        data: { ...node.data, label: `Node ${node.id}` },
+        style: { backgroundColor: color }
+      };
+    });
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
   }, [treeData, setNodes, setEdges]);
+
+  // Define the handleNodeClick function
+  const handleNodeClick = (event: any, node: any) => {
+    // Perform any action here. For demonstration, we'll just log the node's data
+    console.log('Clicked node:', node);
+    // const { updatedNodes, updatedEdges } = toggleCollapse(nodes, edges, node);
+    // setNodes(updatedNodes);
+    // setEdges(updatedEdges);
+  };
 
   return (
     <div style={{ height: 800 }}>
@@ -93,6 +122,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData }) => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodeClick={handleNodeClick}
         fitView
       >
         <MiniMap />

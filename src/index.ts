@@ -159,10 +159,31 @@ async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeMa
 
     const treeData = response.data;
     console.log(treeData);
-    //treeManager.buildTreeFromData(treeData.nodes, treeData.edges);
-    //const treeNodeStructure = treeManager.getTreeSnapshot();
-    //console.log(treeNodeStructure)
+    console.log(notebookPanel?.model?.cells)
 
+    
+
+    // Set nodes.data.category for each node in treeData
+    const categoryPromises = treeData.nodes.map(async (node: any) => {
+      const category = await axios.post('http://127.0.0.1:5002/get-node-category', {
+        // Replace 'import pandas' with the actual code you want to pass.
+        // code: notebookPanel.model?.cells.get(node.id)?.value.text
+        // code: 'import pandas'
+        filepath: notebookPath,
+        cellIndex: node.id
+      }, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 50000 // or a value that suits your backend's response time
+      });
+      console.log("category for node", node.id, ":", category.data);
+      
+      // convert category.data to a string
+      node.category = category.data; //'import' //category.data;
+    });
+
+    await Promise.all(categoryPromises);
+
+    // Proceed with the rest of the code after all categories are set
     if (treePanel) {
       // Update the existing panel with the new tree data
       treePanel.updateTreeData(treeData);
@@ -176,6 +197,7 @@ async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeMa
     console.error("Failed to fetch tree data:", error);
   }
 }
+
 
 
 
