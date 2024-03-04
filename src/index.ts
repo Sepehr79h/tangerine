@@ -166,22 +166,30 @@ async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeMa
     // Set nodes.data.category for each node in treeData
     const categoryPromises = treeData.nodes.map(async (node: any) => {
       const category = await axios.post('http://127.0.0.1:5002/get-node-category', {
-        // Replace 'import pandas' with the actual code you want to pass.
-        // code: notebookPanel.model?.cells.get(node.id)?.value.text
-        // code: 'import pandas'
         filepath: notebookPath,
         cellIndex: node.id
       }, {
         headers: { 'Content-Type': 'application/json' },
-        timeout: 50000 // or a value that suits your backend's response time
+        timeout: 50000
       });
       console.log("category for node", node.id, ":", category.data);
-      
-      // convert category.data to a string
-      node.category = category.data; //'import' //category.data;
+      node.category = category.data; 
+    });
+
+    const headerPromises = treeData.nodes.map(async (node: any) => {
+      const header = await axios.post('http://127.0.0.1:5002/get-node-header', {
+        filepath: notebookPath,
+        cellIndex: node.id
+      }, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 50000 
+      });
+      console.log("header for node", node.id, ":", header.data);
+      node.header = header.data; //'import' //category.data;
     });
 
     await Promise.all(categoryPromises);
+    await Promise.all(headerPromises);
 
     // Proceed with the rest of the code after all categories are set
     if (treePanel) {

@@ -17,11 +17,11 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 172;
 const nodeHeight = 36;
 const categoryColorMap: { [key: string]: string } = {
-  import: 'green',
-  wrangle: 'blue',
-  explore: 'orange',
-  model: 'red',
-  evaluate: 'purple'
+  import: 'LightGreen',
+  wrangle: 'LightBlue',
+  explore: 'LightCoral',
+  model: 'LightCyan',
+  evaluate: 'LightGoldenRodYellow'
 };
 
 // Function to apply Dagre layout to nodes and edges
@@ -39,7 +39,7 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'TB') => {
     node.targetPosition = direction === 'LR' ? 'left' : 'top';
     node.sourcePosition = direction === 'LR' ? 'right' : 'bottom';
     node.position = { x: nodeWithPosition.x - nodeWidth / 2, y: nodeWithPosition.y - nodeHeight / 2 };
-    node.data = { label: `Node ${node.id}` };
+    node.data = { label: `${node.header} (${node.id})` };
   });
   return { nodes, edges };
 };
@@ -98,7 +98,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData }) => {
       const color = categoryColorMap[node.category];
       return {
         ...node,
-        data: { ...node.data, label: `Node ${node.id}` },
+        data: { ...node.data, label: `${node.header} (${node.id})`},
         style: { backgroundColor: color }
       };
     });
