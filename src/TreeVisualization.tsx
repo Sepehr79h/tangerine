@@ -9,6 +9,7 @@ import ReactFlow, {
 } from 'react-flow-renderer';
 import dagre from '@dagrejs/dagre';
 import { Widget } from '@lumino/widgets';
+import '../style/TreeVisualization.css'; // Adjust the path as needed
 // import { toggleCollapse } from './TreeUtils'; // Adjust the path as needed
 
 // Initialize the dagre graph for layout calculations
@@ -114,9 +115,23 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData }) => {
     // setNodes(updatedNodes);
     // setEdges(updatedEdges);
   };
+  
+  const Legend = ({ categoryColorMap }: { categoryColorMap: Record<string, string> }) => {
+    return (
+      <div className="legend">
+        {Object.keys(categoryColorMap).map((category) => (
+          <div key={category} className="legend-item">
+            <span className="legend-color" style={{ backgroundColor: categoryColorMap[category] }}></span>
+            <span className="legend-text">{category}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div style={{ height: 800 }}>
+      <Legend categoryColorMap={categoryColorMap} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
