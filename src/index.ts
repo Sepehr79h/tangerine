@@ -121,28 +121,9 @@ function updateVisualizationPanel(notebookPanel: NotebookPanel, app: JupyterFron
   app.shell.add(visualizationPanel, 'main', { mode: 'split-bottom' });
 }
 
-// function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeManager: TreeManager, app: JupyterFrontEnd): void {
-//   console.log(notebookPanel.context.path);
-//   const treePanelId = `tangerine-tree-visualization-${notebookPanel.id}`;
-//   let treePanel = Array.from(app.shell.widgets()).find(w => w.id === treePanelId) as TreeVisualizationWidget | undefined;
-
-//   const treeData = treeManager.getTreeSnapshot();
-//   console.log(treeData)
-
-//   if (treePanel) {
-//     // Update the existing panel with the new tree data
-//     treePanel.updateTreeData(treeData);
-//   } else {
-//     // Create a new panel if it doesn't exist
-//     treePanel = new TreeVisualizationWidget(treeData);
-//     treePanel.id = treePanelId;
-//     app.shell.add(treePanel, 'main', { mode: 'split-right' });
-//   }
-// }
-
 async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeManager: TreeManager, app: JupyterFrontEnd): Promise<void> {
   console.log("Updating tree visualization panel")
-  const notebookPath = notebookPanel.context.path; // Get the current notebook path
+  const notebookPath = notebookPanel.context.path; 
   console.log(notebookPath)
   const treePanelId = `tangerine-tree-visualization-${notebookPanel.id}`;
   let treePanel = Array.from(app.shell.widgets()).find(w => w.id === treePanelId) as TreeVisualizationWidget | undefined;
@@ -154,50 +135,45 @@ async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeMa
       filepath: notebookPath
     }, {
       headers: { 'Content-Type': 'application/json' },
-      timeout: 50000 // or a value that suits your backend's response time
+      timeout: 50000 
     });
 
     const treeData = response.data;
     console.log(treeData);
-    console.log(notebookPanel?.model?.cells)
 
-    
+    // const categoryPromises = treeData.nodes.map(async (node: any) => {
+    //   const category = await axios.post('http://127.0.0.1:5002/get-node-category', {
+    //     filepath: notebookPath,
+    //     cellIndex: node.id
+    //   }, {
+    //     headers: { 'Content-Type': 'application/json' },
+    //     timeout: 50000
+    //   });
+    //   console.log("category for node", node.id, ":", category.data);
+    //   node.category = category.data; 
+    // });
 
-    // Set nodes.data.category for each node in treeData
-    const categoryPromises = treeData.nodes.map(async (node: any) => {
-      const category = await axios.post('http://127.0.0.1:5002/get-node-category', {
-        filepath: notebookPath,
-        cellIndex: node.id
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 50000
-      });
-      console.log("category for node", node.id, ":", category.data);
-      node.category = category.data; 
-    });
+    // const headerPromises = treeData.nodes.map(async (node: any) => {
+    //   const header = await axios.post('http://127.0.0.1:5002/get-node-header', {
+    //     filepath: notebookPath,
+    //     cellIndex: node.id
+    //   }, {
+    //     headers: { 'Content-Type': 'application/json' },
+    //     timeout: 50000 
+    //   });
+    //   console.log("header for node", node.id, ":", header.data);
+    //   node.header = header.data; //'import' //category.data;
+    // });
 
-    const headerPromises = treeData.nodes.map(async (node: any) => {
-      const header = await axios.post('http://127.0.0.1:5002/get-node-header', {
-        filepath: notebookPath,
-        cellIndex: node.id
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 50000 
-      });
-      console.log("header for node", node.id, ":", header.data);
-      node.header = header.data; //'import' //category.data;
-    });
+    // await Promise.all(categoryPromises);
+    // await Promise.all(headerPromises);
 
-    await Promise.all(categoryPromises);
-    await Promise.all(headerPromises);
-
-    // Proceed with the rest of the code after all categories are set
     if (treePanel) {
       // Update the existing panel with the new tree data
       treePanel.updateTreeData(treeData);
     } else {
       // Create a new panel if it doesn't exist and add it to the JupyterLab shell
-      treePanel = new TreeVisualizationWidget(treeData);
+      treePanel = new TreeVisualizationWidget(treeData, notebookPanel);
       treePanel.id = treePanelId;
       app.shell.add(treePanel, 'main', { mode: 'split-right' });
     }
