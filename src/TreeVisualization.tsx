@@ -14,51 +14,51 @@ import '../style/TreeVisualization.css'; // Adjust the path as needed
 import { NotebookPanel } from '@jupyterlab/notebook';
 
 // Initialize the dagre graph for layout calculations
-var data = {
-  "nodes": [
-    {"id": "group1", "data": {"label": "Data Import"}},
-    {"id": "group2", "data": {"label": "Data Wrangling"}},
-    {"id": "group3", "data": {"label": "Model Building"}},
-    {"id": "group4", "data": {"label": "Model Evaluation"}},
-    {"id": "1", "data": {"label": "Import Libraries"}, "category": "import", "parentNode": "group1"},
-    {"id": "2", "data": {"label": "Load Data"}, "category": "import", "parentNode": "group1"},
-    {"id": "3", "data": {"label": "Preview Data"}, "category": "explore", "parentNode": "group1"},
-    {"id": "4", "data": {"label": "Plot Data"}, "category": "explore", "parentNode": "group1"},
-    {"id": "5", "data": {"label": "Reshape Data"}, "category": "wrangle", "parentNode": "group2"},
-    {"id": "6", "data": {"label": "Check Data Shape"}, "category": "explore", "parentNode": "group2"},
-    {"id": "7", "data": {"label": "Define Target"}, "category": "wrangle", "parentNode": "group2"},
-    {"id": "8", "data": {"label": "Create Model"}, "category": "model", "parentNode": "group3"},
-    {"id": "9", "data": {"label": "Fit Model"}, "category": "model", "parentNode": "group3"},
-    {"id": "10", "data": {"label": "Get Model Coefficient"}, "category": "model", "parentNode": "group3"},
-    {"id": "11", "data": {"label": "Get Model Intercept"}, "category": "model", "parentNode": "group3"},
-    {"id": "12", "data": {"label": "Predict Values"}, "category": "model", "parentNode": "group3"},
-    {"id": "13", "data": {"label": "Plot Predictions"}, "category": "explore", "parentNode": "group3"},
-    {"id": "14", "data": {"label": "Calculate Metrics"}, "category": "evaluate", "parentNode": "group4"},
-    {"id": "15", "data": {"label": "Print Metrics"}, "category": "evaluate", "parentNode": "group4"}
-  ],
-  "edges": [
-    {"source": "2", "target": "3"},
-    {"source": "2", "target": "4"},
-    {"source": "2", "target": "5"},
-    {"source": "2", "target": "7"},
-    {"source": "5", "target": "6"},
-    {"source": "5", "target": "9"},
-    {"source": "5", "target": "12"},
-    {"source": "5", "target": "14"},
-    {"source": "7", "target": "9"},
-    {"source": "7", "target": "14"},
-    {"source": "8", "target": "9"},
-    {"source": "8", "target": "12"},
-    {"source": "8", "target": "14"},
-    {"source": "9", "target": "10"},
-    {"source": "9", "target": "11"},
-    {"source": "9", "target": "12"},
-    {"source": "9", "target": "13"},
-    {"source": "9", "target": "14"},
-    {"source": "12", "target": "13"},
-    {"source": "12", "target": "14"}
-  ]
-}
+// var data = {
+//   "nodes": [
+//     {"id": "group1", "data": {"label": "Data Import"}},
+//     {"id": "group2", "data": {"label": "Data Wrangling"}},
+//     {"id": "group3", "data": {"label": "Model Building"}},
+//     {"id": "group4", "data": {"label": "Model Evaluation"}},
+//     {"id": "1", "data": {"label": "Import Libraries"}, "category": "import", "parentNode": "group1"},
+//     {"id": "2", "data": {"label": "Load Data"}, "category": "import", "parentNode": "group1"},
+//     {"id": "3", "data": {"label": "Preview Data"}, "category": "explore", "parentNode": "group1"},
+//     {"id": "4", "data": {"label": "Plot Data"}, "category": "explore", "parentNode": "group1"},
+//     {"id": "5", "data": {"label": "Reshape Data"}, "category": "wrangle", "parentNode": "group2"},
+//     {"id": "6", "data": {"label": "Check Data Shape"}, "category": "explore", "parentNode": "group2"},
+//     {"id": "7", "data": {"label": "Define Target"}, "category": "wrangle", "parentNode": "group2"},
+//     {"id": "8", "data": {"label": "Create Model"}, "category": "model", "parentNode": "group3"},
+//     {"id": "9", "data": {"label": "Fit Model"}, "category": "model", "parentNode": "group3"},
+//     {"id": "10", "data": {"label": "Get Model Coefficient"}, "category": "model", "parentNode": "group3"},
+//     {"id": "11", "data": {"label": "Get Model Intercept"}, "category": "model", "parentNode": "group3"},
+//     {"id": "12", "data": {"label": "Predict Values"}, "category": "model", "parentNode": "group3"},
+//     {"id": "13", "data": {"label": "Plot Predictions"}, "category": "explore", "parentNode": "group3"},
+//     {"id": "14", "data": {"label": "Calculate Metrics"}, "category": "evaluate", "parentNode": "group4"},
+//     {"id": "15", "data": {"label": "Print Metrics"}, "category": "evaluate", "parentNode": "group4"}
+//   ],
+//   "edges": [
+//     {"source": "2", "target": "3"},
+//     {"source": "2", "target": "4"},
+//     {"source": "2", "target": "5"},
+//     {"source": "2", "target": "7"},
+//     {"source": "5", "target": "6"},
+//     {"source": "5", "target": "9"},
+//     {"source": "5", "target": "12"},
+//     {"source": "5", "target": "14"},
+//     {"source": "7", "target": "9"},
+//     {"source": "7", "target": "14"},
+//     {"source": "8", "target": "9"},
+//     {"source": "8", "target": "12"},
+//     {"source": "8", "target": "14"},
+//     {"source": "9", "target": "10"},
+//     {"source": "9", "target": "11"},
+//     {"source": "9", "target": "12"},
+//     {"source": "9", "target": "13"},
+//     {"source": "9", "target": "14"},
+//     {"source": "12", "target": "13"},
+//     {"source": "12", "target": "14"}
+//   ]
+// }
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 const nodeWidth = 172;
@@ -87,7 +87,7 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'TB') => {
     node.sourcePosition = direction === 'LR' ? 'right' : 'bottom';
     node.position = { x: nodeWithPosition.x - nodeWidth / 2, y: nodeWithPosition.y - nodeHeight / 2 };
     // node.data = { label: `${node.label} (${node.id})` };
-    node.style = { backgroundColor: categoryColorMap[node.category] };
+    node.style = { backgroundColor: categoryColorMap[node.parentNode] };
   });
   return { nodes, edges };
 };
@@ -142,7 +142,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
   useEffect(() => {
     // Initialize group visibility to false (collapsed) for each group
     const initialVisibility: { [key: string]: boolean } = {};
-    data.nodes.forEach(node => {
+    treeData.nodes.forEach(node => {
       if (!node.parentNode) {
         initialVisibility[node.id] = false;
       }
@@ -150,10 +150,10 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
     setGroupVisibility(initialVisibility);
 
     // Apply Dagre layout to nodes and edges
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(data.nodes, data.edges);
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(treeData.nodes, treeData.edges);
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
-  }, [data]);
+  }, [treeData]);
 
   const handleNodeClick = (event: any, node: any) => {
     console.log('Clicked node:', node);
