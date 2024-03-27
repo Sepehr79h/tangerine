@@ -135,7 +135,7 @@ async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeMa
       filepath: notebookPath
     }, {
       headers: { 'Content-Type': 'application/json' },
-      timeout: 50000 
+      timeout: 500000 
     });
 
     const treeData = response.data;
