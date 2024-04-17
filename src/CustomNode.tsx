@@ -24,6 +24,10 @@ const CustomNode = ({ data, id, onAddNode, getSuggestions }: { data: any, id: an
     onAddNode(id, suggestion);
     setShowSuggestions(false);  // Close suggestions modal/dropdown
   };
+
+  const handleCancel = () => {
+    setShowSuggestions(false);
+  };
   
   console.log(data);
   console.log(id);
@@ -39,11 +43,14 @@ const CustomNode = ({ data, id, onAddNode, getSuggestions }: { data: any, id: an
       <button onClick={handleAddClick} className="add-node-button">+</button>
       {showSuggestions && (
         <div className="suggestions-dropdown">
-          {suggestions.map((suggestion: any, index: number) => (
+          {suggestions.map((suggestion: any, index: any) => (
             <div key={index} onClick={() => handleSelectSuggestion(suggestion)} className="suggestion-item">
               {suggestion.label}
             </div>
           ))}
+          <div onClick={handleCancel} className="suggestion-item" style={{textAlign: 'center', color: 'red'}}>
+            Cancel
+          </div>
         </div>
       )}
       <Handle type="source" position={Position.Bottom} />
