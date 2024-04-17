@@ -70,9 +70,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
           // Existing setup code
           const cellHeaderText = 'My Custom Header';
           addHeaderToCell(notebookPanel, cellHeaderText, app, updateVisualizationPanel);
-          notebookPanel.model.contentChanged.connect(() => {
-            updateVisualizationPanel(notebookPanel, app);
-          });
+          // notebookPanel.model.contentChanged.connect(() => {
+          //   updateVisualizationPanel(notebookPanel, app);
+          // });
           // Add listener for cell changes (addition and removal)
           notebookPanel.model.cells.changed.connect((sender, args) => {
             if (args.type === 'add') {
@@ -86,7 +86,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
                 //createTreeVisualization(notebookPanel, treeManager, app);
               });
               //updateTreeVisualizationPanel(notebookPanel, treeManager, app);
-              updateVisualizationPanel(notebookPanel, app);
+              //updateVisualizationPanel(notebookPanel, app);
               //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
             }
           
@@ -96,7 +96,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
               console.log(treeManager.indexIdMap);
               console.log(treeManager.getTreeSnapshot());
               //updateTreeVisualizationPanel(notebookPanel, treeManager, app);
-              updateVisualizationPanel(notebookPanel, app);
+              //updateVisualizationPanel(notebookPanel, app);
               //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
             }
           });

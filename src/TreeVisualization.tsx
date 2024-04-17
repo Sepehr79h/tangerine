@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import ReactFlow, {
   Background,
@@ -13,188 +13,34 @@ import { Widget } from '@lumino/widgets';
 import '../style/TreeVisualization.css'; // Adjust the path as needed
 // import { toggleCollapse } from './TreeUtils'; // Adjust the path as needed
 import { NotebookPanel } from '@jupyterlab/notebook';
-
-// Initialize the dagre graph for layout calculations
-// var data = {
-//   "nodes": [
-//     {"id": "import", "data": {"label": "Data Import"}},
-//     {"id": "wrangle", "data": {"label": "Data Wrangling"}},
-//     {"id": "explore", "data": {"label": "Data Exploration"}},
-//     {"id": "model", "data": {"label": "Model Building"}},
-//     {"id": "evaluate", "data": {"label": "Model Evaluation"}},
-//     {"id": "1", "data": {"label": "Import Libraries"}, "parentNode": "import"},
-//     {"id": "2", "data": {"label": "Load Dataset"}, "parentNode": "import"},
-//     {"id": "3", "data": {"label": "Preview Data"}, "parentNode": "explore"},
-//     {"id": "4", "data": {"label": "Plot Experience vs Salary"}, "parentNode": "explore"},
-//     {"id": "5", "data": {"label": "Reshape Experience Data"}, "parentNode": "wrangle"},
-//     {"id": "6", "data": {"label": "Check Reshaped Data Shape"}, "parentNode": "wrangle"},
-//     {"id": "7", "data": {"label": "Define Target Variable"}, "parentNode": "wrangle"},
-//     {"id": "8", "data": {"label": "Initialize Model"}, "parentNode": "model"},
-//     {"id": "9", "data": {"label": "Fit Model"}, "parentNode": "model"},
-//     {"id": "10", "data": {"label": "Display Slope"}, "parentNode": "evaluate"},
-//     {"id": "11", "data": {"label": "Display Intercept"}, "parentNode": "evaluate"},
-//     {"id": "12", "data": {"label": "Predict Values"}, "parentNode": "model"},
-//     {"id": "13", "data": {"label": "Plot Predictions"}, "parentNode": "evaluate"},
-//     {"id": "14", "data": {"label": "Calculate Metrics"}, "parentNode": "evaluate"},
-//     {"id": "15", "data": {"label": "Print Metrics"}, "parentNode": "evaluate"}
-//   ],
-//   "edges": [
-//     {"source": "2", "target": "3"},
-//     {"source": "2", "target": "4"},
-//     {"source": "2", "target": "5"},
-//     {"source": "2", "target": "7"},
-//     {"source": "5", "target": "6"},
-//     {"source": "5", "target": "9"},
-//     {"source": "5", "target": "12"},
-//     {"source": "5", "target": "14"},
-//     {"source": "7", "target": "9"},
-//     {"source": "7", "target": "14"},
-//     {"source": "8", "target": "9"},
-//     {"source": "8", "target": "12"},
-//     {"source": "8", "target": "14"},
-//     {"source": "9", "target": "10"},
-//     {"source": "9", "target": "11"},
-//     {"source": "9", "target": "12"},
-//     {"source": "9", "target": "13"},
-//     {"source": "9", "target": "14"},
-//     {"source": "12", "target": "13"},
-//     {"source": "12", "target": "14"}
-//   ]
-// }
-// var data = {'nodes': [{'id': 'import', 'data': {'label': 'Data Import'}}, {'id': 'wrangle', 'data': {'label': 'Data Wrangling'}}, {'id': 'explore', 'data': {'label': 'Data Exploration'}}, {'id': 'model', 'data': {'label': 'Model Building'}}, {'id': 'evaluate', 'data': {'label': 'Model Evaluation'}}, {'id': '1', 'data': {'label': 'Library Imports'}, 'parentNode': 'import'}, {'id': '2', 'data': {'label': 'Load Dataset'}, 'parentNode': 'import'}, {'id': '3', 'data': {'label': 'Check Null Values'}, 'parentNode': 'wrangle'}, {'id': '4', 'data': {'label': 'Dataset Shape'}, 'parentNode': 'explore'}, {'id': '5', 'data': {'label': 'Dataset Info'}, 'parentNode': 'explore'}, {'id': '6', 'data': {'label': 'Object Data Types'}, 'parentNode': 'explore'}, {'id': '7', 'data': {'label': 'Value Counts of Attrition'}, 'parentNode': 'explore'}, {'id': '8', 'data': {'label': 'Encode Attrition'}, 'parentNode': 'wrangle'}, {'id': '9', 'data': {'label': 'Attrition Pie Chart'}, 'parentNode': 'explore'}, {'id': '10', 'data': {'label': 'Integer Data Types'}, 'parentNode': 'explore'}, {'id': '11', 'data': {'label': 'Age Distribution'}, 'parentNode': 'explore'}, {'id': '12', 'data': {'label': 'Top Ages'}, 'parentNode': 'explore'}, {'id': '13', 'data': {'label': 'Least Common Ages'}, 'parentNode': 'explore'}, {'id': '14', 'data': {'label': 'Standard Hours Value Counts'}, 'parentNode': 'explore'}, {'id': '15', 'data': {'label': 'Employee Count Value Counts'}, 'parentNode': 'explore'}, {'id': '16', 'data': {'label': 'Drop Columns & Correlation Heatmap'}, 'parentNode': 'wrangle'}, {'id': '17', 'data': {'label': 'Years at Company Boxplot'}, 'parentNode': 'explore'}, {'id': '18', 'data': {'label': 'Business Travel vs Attrition'}, 'parentNode': 'explore'}, {'id': '19', 'data': {'label': 'Department vs Attrition'}, 'parentNode': 'explore'}, {'id': '20', 'data': {'label': 'Department Value Counts'}, 'parentNode': 'explore'}, {'id': '21', 'data': {'label': 'Gender vs Attrition'}, 'parentNode': 'explore'}, {'id': '22', 'data': {'label': 'Job Role vs Attrition'}, 'parentNode': 'explore'}, {'id': '23', 'data': {'label': 'Monthly Income by Job Role'}, 'parentNode': 'explore'}, {'id': '24', 'data': {'label': 'Education Field vs Attrition'}, 'parentNode': 'explore'}, {'id': '25', 'data': {'label': 'Overtime vs Attrition'}, 'parentNode': 'explore'}, {'id': '26', 'data': {'label': 'Environment Satisfaction Count'}, 'parentNode': 'explore'}, {'id': '27', 'data': {'label': 'Feature & Target Definition'}, 'parentNode': 'model'}, {'id': '28', 'data': {'label': 'Encode Categorical Features'}, 'parentNode': 'wrangle'}, {'id': '29', 'data': {'label': 'Feature Scaling'}, 'parentNode': 'wrangle'}, {'id': '30', 'data': {'label': 'Train Test Split'}, 'parentNode': 'model'}, {'id': '31', 'data': {'label': 'Dataset Shapes After Split'}, 'parentNode': 'model'}, {'id': '32', 'data': {'label': 'Model Training & Evaluation'}, 'parentNode': 'model'}], 'edges': [{'source': '2', 'target': '3'}, {'source': '2', 'target': '4'}, {'source': '2', 'target': '5'}, {'source': '2', 'target': '6'}, {'source': '2', 'target': '7'}, {'source': '2', 'target': '8'}, {'source': '8', 'target': '9'}, {'source': '8', 'target': '10'}, {'source': '8', 'target': '11'}, {'source': '8', 'target': '12'}, {'source': '8', 'target': '13'}, {'source': '8', 'target': '14'}, {'source': '8', 'target': '15'}, {'source': '8', 'target': '16'}, {'source': '11', 'target': '16'}, {'source': '16', 'target': '17'}, {'source': '16', 'target': '18'}, {'source': '16', 'target': '19'}, {'source': '16', 'target': '21'}, {'source': '16', 'target': '22'}, {'source': '16', 'target': '23'}, {'source': '16', 'target': '24'}, {'source': '16', 'target': '25'}, {'source': '16', 'target': '26'}, {'source': '16', 'target': '27'}, {'source': '17', 'target': '18'}, {'source': '18', 'target': '19'}, {'source': '19', 'target': '20'}, {'source': '19', 'target': '21'}, {'source': '21', 'target': '22'}, {'source': '22', 'target': '23'}, {'source': '23', 'target': '24'}, {'source': '24', 'target': '25'}, {'source': '25', 'target': '26'}, {'source': '26', 'target': '27'}, {'source': '27', 'target': '28'}, {'source': '27', 'target': '29'}, {'source': '27', 'target': '30'}, {'source': '28', 'target': '29'}, {'source': '29', 'target': '30'}, {'source': '30', 'target': '32'}, {'source': '30', 'target': '31'}]}
-
-//var data = {'nodes': [{'id': 'import', 'data': {'label': 'Data Import'}}, {'id': 'wrangle', 'data': {'label': 'Data Wrangling'}}, {'id': 'explore', 'data': {'label': 'Data Exploration'}}, {'id': 'model', 'data': {'label': 'Model Building'}}, {'id': 'evaluate', 'data': {'label': 'Model Evaluation'}}, {'id': '1', 'data': {'label': 'Library Imports'}, 'parentNode': 'group_1'}, {'id': '2', 'data': {'label': 'Load Dataset'}, 'parentNode': 'group_1'}, {'id': '3', 'data': {'label': 'Check Null Values'}, 'parentNode': 'wrangle'}, {'id': '4', 'data': {'label': 'Dataset Shape'}, 'parentNode': 'group_4'}, {'id': '5', 'data': {'label': 'Dataset Info'}, 'parentNode': 'group_4'}, {'id': '6', 'data': {'label': 'Object Data Types'}, 'parentNode': 'group_4'}, {'id': '7', 'data': {'label': 'Value Counts of Attrition'}, 'parentNode': 'group_4'}, {'id': '8', 'data': {'label': 'Encode Attrition'}, 'parentNode': 'wrangle'}, {'id': '9', 'data': {'label': 'Attrition Pie Chart'}, 'parentNode': 'group_9'}, {'id': '10', 'data': {'label': 'Integer Data Types'}, 'parentNode': 'group_9'}, {'id': '11', 'data': {'label': 'Age Distribution'}, 'parentNode': 'group_9'}, {'id': '12', 'data': {'label': 'Top Ages'}, 'parentNode': 'group_9'}, {'id': '13', 'data': {'label': 'Least Common Ages'}, 'parentNode': 'group_9'}, {'id': '14', 'data': {'label': 'Standard Hours Value Counts'}, 'parentNode': 'group_9'}, {'id': '15', 'data': {'label': 'Employee Count Value Counts'}, 'parentNode': 'group_9'}, {'id': '16', 'data': {'label': 'Drop Columns & Correlation Heatmap'}, 'parentNode': 'wrangle'}, {'id': '17', 'data': {'label': 'Years at Company Boxplot'}, 'parentNode': 'group_17'}, {'id': '18', 'data': {'label': 'Business Travel vs Attrition'}, 'parentNode': 'group_17'}, {'id': '19', 'data': {'label': 'Department vs Attrition'}, 'parentNode': 'group_17'}, {'id': '20', 'data': {'label': 'Department Value Counts'}, 'parentNode': 'group_17'}, {'id': '21', 'data': {'label': 'Gender vs Attrition'}, 'parentNode': 'group_17'}, {'id': '22', 'data': {'label': 'Job Role vs Attrition'}, 'parentNode': 'group_17'}, {'id': '23', 'data': {'label': 'Monthly Income by Job Role'}, 'parentNode': 'group_17'}, {'id': '24', 'data': {'label': 'Education Field vs Attrition'}, 'parentNode': 'group_17'}, {'id': '25', 'data': {'label': 'Overtime vs Attrition'}, 'parentNode': 'group_17'}, {'id': '26', 'data': {'label': 'Environment Satisfaction Count'}, 'parentNode': 'group_17'}, {'id': '27', 'data': {'label': 'Feature & Target Definition'}, 'parentNode': 'model'}, {'id': '28', 'data': {'label': 'Encode Categorical Features'}, 'parentNode': 'group_28'}, {'id': '29', 'data': {'label': 'Feature Scaling'}, 'parentNode': 'group_28'}, {'id': '30', 'data': {'label': 'Train Test Split'}, 'parentNode': 'group_30'}, {'id': '31', 'data': {'label': 'Dataset Shapes After Split'}, 'parentNode': 'group_30'}, {'id': '32', 'data': {'label': 'Model Training & Evaluation'}, 'parentNode': 'group_30'}, {'id': 'group_1', 'data': {'label': 'group_1'}, 'parentNode': 'import'}, {'id': 'group_4', 'data': {'label': 'group_4'}, 'parentNode': 'explore'}, {'id': 'group_9', 'data': {'label': 'group_9'}, 'parentNode': 'explore'}, {'id': 'group_17', 'data': {'label': 'group_17'}, 'parentNode': 'explore'}, {'id': 'group_28', 'data': {'label': 'group_28'}, 'parentNode': 'wrangle'}, {'id': 'group_30', 'data': {'label': 'group_30'}, 'parentNode': 'model'}], 'edges': [{'source': '2', 'target': '3'}, {'source': '2', 'target': '4'}, {'source': '2', 'target': '5'}, {'source': '2', 'target': '6'}, {'source': '2', 'target': '7'}, {'source': '2', 'target': '8'}, {'source': '8', 'target': '9'}, {'source': '8', 'target': '10'}, {'source': '8', 'target': '11'}, {'source': '8', 'target': '12'}, {'source': '8', 'target': '13'}, {'source': '8', 'target': '14'}, {'source': '8', 'target': '15'}, {'source': '8', 'target': '16'}, {'source': '11', 'target': '16'}, {'source': '16', 'target': '17'}, {'source': '16', 'target': '18'}, {'source': '16', 'target': '19'}, {'source': '16', 'target': '21'}, {'source': '16', 'target': '22'}, {'source': '16', 'target': '23'}, {'source': '16', 'target': '24'}, {'source': '16', 'target': '25'}, {'source': '16', 'target': '26'}, {'source': '16', 'target': '27'}, {'source': '17', 'target': '18'}, {'source': '18', 'target': '19'}, {'source': '19', 'target': '20'}, {'source': '19', 'target': '21'}, {'source': '21', 'target': '22'}, {'source': '22', 'target': '23'}, {'source': '23', 'target': '24'}, {'source': '24', 'target': '25'}, {'source': '25', 'target': '26'}, {'source': '26', 'target': '27'}, {'source': '27', 'target': '28'}, {'source': '27', 'target': '29'}, {'source': '27', 'target': '30'}, {'source': '28', 'target': '29'}, {'source': '29', 'target': '30'}, {'source': '30', 'target': '32'}, {'source': '30', 'target': '31'}, {'source': '2', 'target': 'group_4'}, {'source': '27', 'target': 'group_28'}, {'source': 'group_1', 'target': '3'}, {'source': 'group_17', 'target': '27'}, {'source': 'group_1', 'target': '4'}, {'source': '29', 'target': 'group_30'}, {'source': '16', 'target': 'group_17'}, {'source': 'group_1', 'target': '6'}, {'source': 'group_1', 'target': '8'}, {'source': 'group_28', 'target': '30'}, {'source': 'group_1', 'target': '5'}, {'source': 'group_1', 'target': '7'}, {'source': '27', 'target': 'group_30'}, {'source': 'group_28', 'target': 'group_30'}, {'source': 'group_9', 'target': '16'}, {'source': 'group_1', 'target': 'group_4'}, {'source': '8', 'target': 'group_9'}]}
-
-var data = {'nodes': [
-          {'id': '1', 'data': {'label': 'Import Libraries'}, 'parentNode': 'group_1'}, 
-          {'id': '2', 'data': {'label': 'Load Data'}, 'parentNode': 'group_1'}, 
-          {'id': '3', 'data': {'label': 'Display Data'}, 'parentNode': 'group_3'}, 
-          {'id': '4', 'data': {'label': 'Plot Data'}, 'parentNode': 'group_3'}, 
-          {'id': '5', 'data': {'label': 'Reshape Data'}, 'parentNode': 'group_5'}, 
-          {'id': '6', 'data': {'label': 'Check Data Shape'}, 'parentNode': 'group_5'}, 
-          {'id': '7', 'data': {'label': 'Define Target'}, 'parentNode': 'group_5'}, 
-          {'id': '8', 'data': {'label': 'Create Model'}, 'parentNode': 'group_8'}, 
-          {'id': '9', 'data': {'label': 'Fit Model'}, 'parentNode': 'group_8'}, 
-          {'id': '10', 'data': {'label': 'Get Model Slope'}, 'parentNode': 'group_8'}, 
-          {'id': '11', 'data': {'label': 'Get Model Intercept'}, 'parentNode': 'group_8'}, 
-          {'id': '12', 'data': {'label': 'Predict Values'}, 'parentNode': 'group_8'}, 
-          {'id': '13', 'data': {'label': 'Plot Predictions'}, 'parentNode': 'group_13'}, 
-          {'id': '14', 'data': {'label': 'Calculate Metrics'}, 'parentNode': 'group_13'},
-          {'id': '15', 'data': {'label': 'Print Metrics'}, 'parentNode': 'group_13'}, 
-          {'id': 'group_1', 'data': {'label': 'group_1'}, 'categoryColor': 'import'}, 
-          {'id': 'group_3', 'data': {'label': 'group_3'}, 'categoryColor': 'explore'}, 
-          {'id': 'group_5', 'data': {'label': 'group_5'}, 'categoryColor': 'wrangle'}, 
-          {'id': 'group_8', 'data': {'label': 'group_8'}, 'categoryColor': 'model'}, 
-          {'id': 'group_13', 'data': {'label': 'group_13'}, 'categoryColor': 'evaluate'}], 
-      'edges': [{'source': '2', 'target': '3'}, {'source': '2', 'target': '4'}, {'source': '2', 'target': '5'}, {'source': '2', 'target': '7'}, {'source': '5', 'target': '6'}, {'source': '5', 'target': '9'}, {'source': '5', 'target': '12'}, {'source': '5', 'target': '14'}, {'source': '7', 'target': '9'}, {'source': '7', 'target': '14'}, {'source': '8', 'target': '9'}, {'source': '8', 'target': '12'}, {'source': '8', 'target': '14'}, {'source': '9', 'target': '10'}, {'source': '9', 'target': '11'}, {'source': '9', 'target': '12'}, {'source': '9', 'target': '13'}, {'source': '9', 'target': '14'}, {'source': '12', 'target': '13'}, {'source': '12', 'target': '14'}, {'source': 'group_5', 'target': '9'}, {'source': '2', 'target': 'group_3'}, {'source': '12', 'target': 'group_13'}, {'source': 'group_1', 'target': '7'}, {'source': 'group_1', 'target': '5'}, {'source': 'group_8', 'target': 'group_13'}, {'source': 'group_5', 'target': 'group_8'}, {'source': '8', 'target': 'group_13'}, {'source': 'group_1', 'target': 'group_5'}, {'source': 'group_8', 'target': '13'}, {'source': 'group_5', 'target': 'group_13'}, {'source': 'group_8', 'target': '14'}, {'source': '2', 'target': 'group_5'}, {'source': '5', 'target': 'group_8'}, {'source': '7', 'target': 'group_8'}, {'source': 'group_5', 'target': '14'}, {'source': '9', 'target': 'group_13'}, {'source': 'group_5', 'target': '12'}, {'source': '7', 'target': 'group_13'}, {'source': 'group_1', 'target': '4'}, {'source': 'group_1', 'target': '3'}, {'source': '5', 'target': 'group_13'}, {'source': 'group_1', 'target': 'group_3'}]}
+import CustomNode from './CustomNode';
+// import custom node css from style folder
+import '../style/CustomNode.css';
 
 
+var data = {'nodes': [{'id': '1', 'data': {'label': 'Library Imports [1]', 'categoryColor': 'import'}, 'parentNode': 'group_1'}, {'id': '2', 'data': {'label': 'Load Dataset [2]', 'categoryColor': 'import'}, 'parentNode': 'group_1'}, {'id': '3', 'data': {'label': 'Check Null Values [3]', 'categoryColor': 'wrangle'}}, {'id': '4', 'data': {'label': 'Dataset Shape [4]', 'categoryColor': 'explore'}, 'parentNode': 'group_4'}, {'id': '5', 'data': {'label': 'Dataset Info [5]', 'categoryColor': 'explore'}, 'parentNode': 'group_4'}, {'id': '6', 'data': {'label': 'Object Type Columns [6]', 'categoryColor': 'explore'}, 'parentNode': 'group_4'}, {'id': '7', 'data': {'label': 'Attrition Value Counts [7]', 'categoryColor': 'explore'}, 'parentNode': 'group_4'}, {'id': '8', 'data': {'label': 'Encode Attrition [8]', 'categoryColor': 'wrangle'}}, {'id': '9', 'data': {'label': 'Attrition Pie Chart [9]', 'categoryColor': 'explore'}, 'parentNode': 'group_9'}, {'id': '10', 'data': {'label': 'Integer Type Columns [10]', 'categoryColor': 'explore'}, 'parentNode': 'group_9'}, {'id': '11', 'data': {'label': 'Age Distribution [11]', 'categoryColor': 'explore'}, 'parentNode': 'group_9'}, {'id': '12', 'data': {'label': 'Top Ages [12]', 'categoryColor': 'explore'}, 'parentNode': 'group_9'}, {'id': '13', 'data': {'label': 'Least Common Ages [13]', 'categoryColor': 'explore'}, 'parentNode': 'group_9'}, {'id': '14', 'data': {'label': 'Standard Hours Value Counts [14]', 'categoryColor': 'explore'}, 'parentNode': 'group_9'}, {'id': '15', 'data': {'label': 'Employee Count Value Counts [15]', 'categoryColor': 'explore'}, 'parentNode': 'group_9'}, {'id': '16', 'data': {'label': 'Drop Columns & Correlation Heatmap [16]', 'categoryColor': 'wrangle'}}, {'id': '17', 'data': {'label': 'Years At Company Boxplot [17]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '18', 'data': {'label': 'Business Travel Countplot [18]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '19', 'data': {'label': 'Department Countplot [19]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '20', 'data': {'label': 'Department Value Counts [20]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '21', 'data': {'label': 'Gender Countplot [21]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '22', 'data': {'label': 'Job Role Countplot [22]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '23', 'data': {'label': 'Monthly Income Barplot [23]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '24', 'data': {'label': 'Education Field Countplot [24]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '25', 'data': {'label': 'Overtime Countplot [25]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '26', 'data': {'label': 'Environment Satisfaction Countplot [26]', 'categoryColor': 'explore'}, 'parentNode': 'group_17'}, {'id': '27', 'data': {'label': 'Feature & Target Definition [27]', 'categoryColor': 'model'}, 'parentNode': 'group_27'}, {'id': '28', 'data': {'label': 'Encode Categorical Features [28]', 'categoryColor': 'model'}, 'parentNode': 'group_27'}, {'id': '29', 'data': {'label': 'Feature Scaling [29]', 'categoryColor': 'model'}, 'parentNode': 'group_27'}, {'id': '30', 'data': {'label': 'Train Test Split [30]', 'categoryColor': 'model'}, 'parentNode': 'group_27'}, {'id': '31', 'data': {'label': 'Dataset Shapes After Split [31]', 'categoryColor': 'model'}, 'parentNode': 'group_27'}, {'id': '32', 'data': {'label': 'Model Training & Evaluation [32]', 'categoryColor': 'model'}, 'parentNode': 'group_27'}, {'id': 'group_1', 'data': {'label': 'Library and Dataset [1-2]', 'categoryColor': 'import'}}, {'id': 'group_4', 'data': {'label': 'Dataset Structure Insight [4-7]', 'categoryColor': 'explore'}}, {'id': 'group_9', 'data': {'label': 'Dataset Value Analysis [9-15]', 'categoryColor': 'explore'}}, {'id': 'group_17', 'data': {'label': 'Employee Data Visualization [17-26]', 'categoryColor': 'explore'}}, {'id': 'group_27', 'data': {'label': 'Model Preparation Steps [27-32]', 'categoryColor': 'model'}}], 'edges': [{'source': '2', 'target': '3'}, {'source': '2', 'target': '4'}, {'source': '2', 'target': '5'}, {'source': '2', 'target': '6'}, {'source': '2', 'target': '7'}, {'source': '2', 'target': '8'}, {'source': '8', 'target': '9'}, {'source': '8', 'target': '10'}, {'source': '8', 'target': '11'}, {'source': '8', 'target': '12'}, {'source': '8', 'target': '13'}, {'source': '8', 'target': '14'}, {'source': '8', 'target': '15'}, {'source': '8', 'target': '16'}, {'source': '11', 'target': '16'}, {'source': '16', 'target': '17'}, {'source': '16', 'target': '18'}, {'source': '16', 'target': '19'}, {'source': '16', 'target': '21'}, {'source': '16', 'target': '22'}, {'source': '16', 'target': '23'}, {'source': '16', 'target': '24'}, {'source': '16', 'target': '25'}, {'source': '16', 'target': '26'}, {'source': '16', 'target': '27'}, {'source': '17', 'target': '18'}, {'source': '18', 'target': '19'}, {'source': '19', 'target': '20'}, {'source': '19', 'target': '21'}, {'source': '21', 'target': '22'}, {'source': '22', 'target': '23'}, {'source': '23', 'target': '24'}, {'source': '24', 'target': '25'}, {'source': '25', 'target': '26'}, {'source': '26', 'target': '27'}, {'source': '27', 'target': '28'}, {'source': '27', 'target': '29'}, {'source': '27', 'target': '30'}, {'source': '28', 'target': '29'}, {'source': '29', 'target': '30'}, {'source': '30', 'target': '32'}, {'source': '30', 'target': '31'}, {'source': '2', 'target': 'group_4'}, {'source': 'group_1', 'target': '3'}, {'source': 'group_1', 'target': '6'}, {'source': '8', 'target': 'group_9'}, {'source': 'group_17', 'target': '27'}, {'source': 'group_1', 'target': '4'}, {'source': 'group_9', 'target': '16'}, {'source': 'group_1', 'target': '5'}, {'source': '16', 'target': 'group_17'}, {'source': 'group_1', 'target': 'group_4'}, {'source': 'group_1', 'target': '8'}, {'source': 'group_1', 'target': '7'}, {'source': '16', 'target': 'group_27'}, {'source': 'group_17', 'target': 'group_27'}, {'source': '26', 'target': 'group_27'}]}
 // var data = {'nodes': [
-//   {'id': 'import', 'data': {'label': 'Data Import'}}, 
-//   {'id': 'wrangle', 'data': {'label': 'Data Wrangling'}}, 
-//   {'id': 'explore', 'data': {'label': 'Data Exploration'}}, 
-//   {'id': 'model', 'data': {'label': 'Model Building'}}, 
-//   {'id': 'evaluate', 'data': {'label': 'Model Evaluation'}}, 
-//   {'id': '1', 'data': {'label': 'Library Imports'}, 'parentNode': 'import'}, 
-//   {'id': '2', 'data': {'label': 'Load Dataset'}, 'parentNode': 'import'}, 
-//   {'id': '3', 'data': {'label': 'Check Null Values'}, 'parentNode': 'wrangle'}, 
-
-//   {'id': 'cluster4567', 'data': {'label': 'Cluster 4567'}, 'parentNode': 'explore'},
-
-
-//   {'id': '4', 'data': {'label': 'Dataset Shape'}, 'parentNode': 'cluster4567'}, 
-//   {'id': '5', 'data': {'label': 'Dataset Info'}, 'parentNode': 'cluster4567'}, 
-//   {'id': '6', 'data': {'label': 'Object Data Types'}, 'parentNode': 'cluster4567'}, 
-//   {'id': '7', 'data': {'label': 'Value Counts of Attrition'}, 'parentNode': 'cluster4567'}, 
-
-
-
-//   {'id': '8', 'data': {'label': 'Encode Attrition'}, 'parentNode': 'wrangle'}, 
-
-//   {'id': 'cluster91011', 'data': {'label': 'Cluster 91011'}, 'parentNode': 'explore'},
-
-//   {'id': '9', 'data': {'label': 'Attrition Pie Chart'}, 'parentNode': 'cluster91011'}, 
-//   {'id': '10', 'data': {'label': 'Integer Data Types'}, 'parentNode': 'cluster91011'}, 
-//   {'id': '11', 'data': {'label': 'Age Distribution'}, 'parentNode': 'cluster91011'}, 
-
-
-//   {'id': 'cluster12131415', 'data': {'label': 'Cluster 12131415'}, 'parentNode': 'explore'},
-
-//   {'id': '12', 'data': {'label': 'Top Ages'}, 'parentNode': 'cluster12131415'}, 
-//   {'id': '13', 'data': {'label': 'Least Common Ages'}, 'parentNode': 'cluster12131415'}, 
-//   {'id': '14', 'data': {'label': 'Standard Hours Value Counts'}, 'parentNode': 'cluster12131415'}, 
-//   {'id': '15', 'data': {'label': 'Employee Count Value Counts'}, 'parentNode': 'cluster12131415'}, 
-
-
-//   {'id': '16', 'data': {'label': 'Drop Columns & Correlation Heatmap'}, 'parentNode': 'wrangle'}, 
-//   {'id': '17', 'data': {'label': 'Years at Company Boxplot'}, 'parentNode': 'explore'}, 
-//   {'id': '18', 'data': {'label': 'Business Travel vs Attrition'}, 'parentNode': 'explore'}, 
-//   {'id': '19', 'data': {'label': 'Department vs Attrition'}, 'parentNode': 'explore'}, 
-//   {'id': '20', 'data': {'label': 'Department Value Counts'}, 'parentNode': 'explore'}, 
-//   {'id': '21', 'data': {'label': 'Gender vs Attrition'}, 'parentNode': 'explore'}, 
-//   {'id': '22', 'data': {'label': 'Job Role vs Attrition'}, 'parentNode': 'explore'}, 
-//   {'id': '23', 'data': {'label': 'Monthly Income by Job Role'}, 'parentNode': 'explore'}, 
-//   {'id': '24', 'data': {'label': 'Education Field vs Attrition'}, 'parentNode': 'explore'}, 
-//   {'id': '25', 'data': {'label': 'Overtime vs Attrition'}, 'parentNode': 'explore'}, 
-//   {'id': '26', 'data': {'label': 'Environment Satisfaction Count'}, 'parentNode': 'explore'}, 
-//   {'id': '27', 'data': {'label': 'Feature & Target Definition'}, 'parentNode': 'model'}, 
-//   {'id': '28', 'data': {'label': 'Encode Categorical Features'}, 'parentNode': 'wrangle'}, 
-//   {'id': '29', 'data': {'label': 'Feature Scaling'}, 'parentNode': 'wrangle'}, 
-//   {'id': '30', 'data': {'label': 'Train Test Split'}, 'parentNode': 'model'}, 
-//   {'id': '31', 'data': {'label': 'Dataset Shapes After Split'}, 'parentNode': 'model'}, 
-//   {'id': '32', 'data': {'label': 'Model Training & Evaluation'}, 'parentNode': 'model'}], 
-//   'edges': [
-//     {'source': '2', 'target': '3'}, 
-
-//     {'source': '2', 'target': 'cluster4567'}, 
-
-//     {'source': '2', 'target': '4'}, 
-//     {'source': '2', 'target': '5'}, 
-//     {'source': '2', 'target': '6'}, 
-//     {'source': '2', 'target': '7'}, 
-//     {'source': '2', 'target': '8'}, 
-
-//     {'source': '8', 'target': 'cluster91011'}, 
-
-//     {'source': '8', 'target': '9'}, 
-//     {'source': '8', 'target': '10'}, 
-//     {'source': '8', 'target': '11'}, 
-
-//     {'source': '8', 'target': 'cluster12131415'}, 
-
-//     {'source': '8', 'target': '12'}, 
-//     {'source': '8', 'target': '13'}, 
-//     {'source': '8', 'target': '14'}, 
-//     {'source': '8', 'target': '15'}, 
-//     {'source': '8', 'target': '16'}, 
-//     {'source': '11', 'target': '16'}, 
-//     {'source': '16', 'target': '17'}, 
-//     {'source': '16', 'target': '18'}, 
-//     {'source': '16', 'target': '19'}, 
-//     {'source': '16', 'target': '21'}, 
-//     {'source': '16', 'target': '22'}, 
-//     {'source': '16', 'target': '23'}, 
-//     {'source': '16', 'target': '24'}, 
-//     {'source': '16', 'target': '25'}, 
-//     {'source': '16', 'target': '26'}, 
-//     {'source': '16', 'target': '27'}, 
-//     {'source': '17', 'target': '18'}, 
-//     {'source': '18', 'target': '19'}, 
-//     {'source': '19', 'target': '20'}, 
-//     {'source': '19', 'target': '21'}, 
-//     {'source': '21', 'target': '22'}, 
-//     {'source': '22', 'target': '23'}, 
-//     {'source': '23', 'target': '24'}, 
-//     {'source': '24', 'target': '25'}, 
-//     {'source': '25', 'target': '26'}, 
-//     {'source': '26', 'target': '27'}, 
-//     {'source': '27', 'target': '28'}, 
-//     {'source': '27', 'target': '29'}, 
-//     {'source': '27', 'target': '30'}, 
-//     {'source': '28', 'target': '29'}, 
-//     {'source': '29', 'target': '30'}, 
-//     {'source': '30', 'target': '32'}, 
-//     {'source': '30', 'target': '31'}]}
+//           {'id': '1', 'data': {'label': 'Import Libraries'}, 'parentNode': 'group_1'}, 
+//           {'id': '2', 'data': {'label': 'Load Data'}, 'parentNode': 'group_1'}, 
+//           {'id': '3', 'data': {'label': 'Display Data'}, 'parentNode': 'group_3'}, 
+//           {'id': '4', 'data': {'label': 'Plot Data'}, 'parentNode': 'group_3'}, 
+//           {'id': '5', 'data': {'label': 'Reshape Data'}, 'parentNode': 'group_5'}, 
+//           {'id': '6', 'data': {'label': 'Check Data Shape'}, 'parentNode': 'group_5'}, 
+//           {'id': '7', 'data': {'label': 'Define Target'}, 'parentNode': 'group_5'}, 
+//           {'id': '8', 'data': {'label': 'Create Model'}, 'parentNode': 'group_8'}, 
+//           {'id': '9', 'data': {'label': 'Fit Model'}, 'parentNode': 'group_8'}, 
+//           {'id': '10', 'data': {'label': 'Get Model Slope'}, 'parentNode': 'group_8'}, 
+//           {'id': '11', 'data': {'label': 'Get Model Intercept'}, 'parentNode': 'group_8'}, 
+//           {'id': '12', 'data': {'label': 'Predict Values'}, 'parentNode': 'group_8'}, 
+//           {'id': '13', 'data': {'label': 'Plot Predictions'}, 'parentNode': 'group_13'}, 
+//           {'id': '14', 'data': {'label': 'Calculate Metrics'}, 'parentNode': 'group_13'},
+//           {'id': '15', 'data': {'label': 'Print Metrics'}, 'parentNode': 'group_13'}, 
+//           {'id': 'group_1', type: 'customNode', 'data': {'label': 'group_1', 'categoryColor': 'import'}}, 
+//           {'id': 'group_3', type: 'customNode', 'data': {'label': 'group_3', 'categoryColor': 'explore'}}, 
+//           {'id': 'group_5', type: 'customNode', 'data': {'label': 'group_5', 'categoryColor': 'wrangle'}}, 
+//           {'id': 'group_8', type: 'customNode', 'data': {'label': 'group_8', 'categoryColor': 'model'}}, 
+//           {'id': 'group_13', type: 'customNode', 'data': {'label': 'group_13', 'categoryColor': 'evaluate'}}], 
+//       'edges': [{'source': '2', 'target': '3'}, {'source': '2', 'target': '4'}, {'source': '2', 'target': '5'}, {'source': '2', 'target': '7'}, {'source': '5', 'target': '6'}, {'source': '5', 'target': '9'}, {'source': '5', 'target': '12'}, {'source': '5', 'target': '14'}, {'source': '7', 'target': '9'}, {'source': '7', 'target': '14'}, {'source': '8', 'target': '9'}, {'source': '8', 'target': '12'}, {'source': '8', 'target': '14'}, {'source': '9', 'target': '10'}, {'source': '9', 'target': '11'}, {'source': '9', 'target': '12'}, {'source': '9', 'target': '13'}, {'source': '9', 'target': '14'}, {'source': '12', 'target': '13'}, {'source': '12', 'target': '14'}, {'source': 'group_5', 'target': '9'}, {'source': '2', 'target': 'group_3'}, {'source': '12', 'target': 'group_13'}, {'source': 'group_1', 'target': '7'}, {'source': 'group_1', 'target': '5'}, {'source': 'group_8', 'target': 'group_13'}, {'source': 'group_5', 'target': 'group_8'}, {'source': '8', 'target': 'group_13'}, {'source': 'group_1', 'target': 'group_5'}, {'source': 'group_8', 'target': '13'}, {'source': 'group_5', 'target': 'group_13'}, {'source': 'group_8', 'target': '14'}, {'source': '2', 'target': 'group_5'}, {'source': '5', 'target': 'group_8'}, {'source': '7', 'target': 'group_8'}, {'source': 'group_5', 'target': '14'}, {'source': '9', 'target': 'group_13'}, {'source': 'group_5', 'target': '12'}, {'source': '7', 'target': 'group_13'}, {'source': 'group_1', 'target': '4'}, {'source': 'group_1', 'target': '3'}, {'source': '5', 'target': 'group_13'}, {'source': 'group_1', 'target': 'group_3'}]}
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -271,13 +117,18 @@ class TreeVisualizationWidget extends Widget {
 
 const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, notebookPanel }) => {
   // Use state hooks for nodes and edges
-  data = treeData;
+  const nodeTypes = useMemo(() => ({
+    customNode: (nodeData: any) => <CustomNode {...nodeData} onAddNode={handleAddNode} getSuggestions={getSuggestions} />
+  }), []);
+  
+  // data = treeData;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [visibleNodes] = useState(data.nodes.filter(node => !node.parentNode));
-  const [visibleEdges] = useState(data.edges.filter(edge => visibleNodes.find(node => node.id === edge.source) && visibleNodes.find(node => node.id === edge.target)));
+  const [visibleNodes, setVisibleNodes] = useState(data.nodes.filter(node => !node.parentNode));
+  const [visibleEdges, setVisibleEdges] = useState(data.edges.filter(edge => visibleNodes.find(node => node.id === edge.source) && visibleNodes.find(node => node.id === edge.target)));
   // data.nodes.forEach((node: any) => {if (!node.parentNode) {node.hidden = true}});
   data.edges.forEach((edge: any) => {edge.type = 'smoothstep', edge.animated = true});
+  data.nodes.forEach((node: any) => {node.type = 'customNode'});
 
   useEffect(() => {
     console.log("Rendering tree visualization")
@@ -290,34 +141,61 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
     setEdges(layoutedEdges);
   }, [visibleNodes, visibleEdges]);
 
+  const getSuggestions = (nodeId: string) => {
+    // Logic to determine suggestions based on node
+    // Example of static suggestions:
+    return [
+      { id: `suggestion1`, label: 'Next Step A' },
+      { id: `suggestion2`, label: 'Next Step B' },
+      { id: `suggestion3`, label: 'Next Step C' }
+    ];
+  };
+
+  const handleAddNode = (parentId: string, suggestion: any) => {
+    // Create new node data
+    const newNode = {
+      id: `n${Date.now()}`, // Use a timestamp to generate a unique ID
+      data: { label: suggestion.label, onAddNode: handleAddNode, getSuggestions: getSuggestions, categoryColor: 'wrangle' }, // Add the missing categoryColor property
+      position: { x: 250, y: 250 }, // Position should be calculated or defined appropriately
+      type: 'customNode',
+    };
+    // Create new edge data
+    const newEdge = {
+      id: `e${parentId}-${newNode.id}`,
+      source: parentId,
+      target: newNode.id,
+      type: 'smoothstep',
+      animated: true
+    };
+    // Add new node and edge to the state
+    setVisibleNodes((prevNodes) => [...prevNodes, newNode]);
+    setVisibleEdges((prevEdges) => [...prevEdges, newEdge]);
+    // Logic to add a new JupyterLab cell goes here
+    if (notebookPanel) {
+      const cellIndex = notebookPanel.content.widgets.findIndex((w) => (w as any).prompt === parentId);
+      if (cellIndex >= 0) {
+        notebookPanel.model?.sharedModel.insertCell(cellIndex + 1, {
+          cell_type: 'cell',
+          //add sample code here
+          source: '#test',
+        });
+        //notebookPanel.content.scrollToCell(cellIndex + 1);
+      }
+    }
+  };
+
   const handleNodeClick = (event: any, node: any) => {
     console.log('Clicked node:', node);
-    
-    // // Toggle the visibility of the child nodes if a group node is clicked
-    // //if (!node.parentNode) {
-    // setActiveGroup(activeGroup === node.id ? null : node.id);
-    // // update visibility of all nodes that have the clicked node as a parentNode
-    // var updatedVisibleNodes = [...visibleNodes];
-    // data.nodes.forEach(curr => {
-    //   if (curr.parentNode === node.id) {
-    //     if (!visibleNodes.includes(curr)) {
-    //       updatedVisibleNodes.push(curr);
-    //     }
-    //     else {
-    //       updatedVisibleNodes = updatedVisibleNodes.filter(item => item !== curr);
-    //     }
-    //   }
-    // });
-    // var updatedEdges = data.edges.filter(edge => updatedVisibleNodes.find(node => node.id === edge.source) && updatedVisibleNodes.find(node => node.id === edge.target));
-    // console.log(updatedVisibleNodes);
-    // setVisibleNodes(updatedVisibleNodes);
-    // setVisibleEdges(updatedEdges);
-
-
     // Handle the notebook panel logic as before
     if (notebookPanel) {
       console.log(notebookPanel.content.widgets);
-      const cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === node.id);
+      // if node.id starts with 'group_', scroll to the integer after 'group_'
+      var cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === node.id);
+      if (node.id.startsWith('group_')) {
+        const group = node.id.replace('group_', '');
+        cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === group);
+        console.log(group, cell);
+      }
       if (cell) {
         notebookPanel.content.scrollToCell(cell);
       }
@@ -348,6 +226,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={handleNodeClick}
+        nodeTypes={nodeTypes}
         connectionLineType={ConnectionLineType.SmoothStep}
         fitView
       >

@@ -1,0 +1,35 @@
+.custom-node {
+    display: flex; /* Use flexbox to layout children */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center children horizontally */
+    justify-content: center; /* Center children vertically */
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 5px;
+    background: white;
+    position: relative; /* Positioning context for absolute children */
+    min-height: 30px;
+  }
+  
+  .custom-node .add-node-button {
+    position: absolute; /* Position the button absolutely within the custom node */
+    bottom: -18px; /* Half of button height to center it on the edge */
+    left: 50%; /* Start at the center */
+    transform: translateX(-50%); /* Center the button exactly */
+    /* The rest of your button styles */
+    background-color: #4CAF50; /* Green background */
+    border: none; /* No borders */
+    color: white; /* White text */
+    text-align: center; /* Centered text */
+    text-decoration: none; /* No underline */
+    font-size: 12px; /* Font size */
+    cursor: pointer; /* Cursor changes to a pointer on hover */
+  }
+  
+  .custom-node .add-node-button:hover {
+    background-color: rgb(199, 221, 200); /* White background on hover */
+    color: black; /* Black text on hover */
+  }
+
+
+  

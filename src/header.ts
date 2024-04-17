@@ -96,7 +96,7 @@ export function addHeaderToCell(notebookPanel: NotebookPanel, headerText: string
             if (cell && !node.querySelector('.my-custom-header')) {
               const headerElement = createHeaderElement(headerText, defaultCategory, notebookPanel, app, updateVisualization);
               node.insertBefore(headerElement, node.firstChild);
-              updateVisualization(notebookPanel, app);
+              //updateVisualization(notebookPanel, app);
             }
           }
         });
