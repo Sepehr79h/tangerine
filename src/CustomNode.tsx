@@ -15,9 +15,14 @@ const CustomNode = ({ data, id, onAddNode, getSuggestions }: { data: any, id: an
   
   const handleAddClick = () => {
     // Fetch suggestions and display them
-    const nodeSuggestions = getSuggestions(id);
-    setSuggestions(nodeSuggestions);
-    setShowSuggestions(true);
+    getSuggestions(id).then((nodeSuggestions: any) => {
+      setSuggestions(nodeSuggestions);
+      setShowSuggestions(true);
+    }).catch((error: any) => {
+      console.error("Error fetching suggestions: ", error);
+      setSuggestions([]);  // Optionally reset to an empty array on error
+      setShowSuggestions(false);
+    });
   };
 
   const handleSelectSuggestion = (suggestion : any) => {
