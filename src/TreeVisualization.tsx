@@ -12,11 +12,12 @@ import dagre from '@dagrejs/dagre';
 import { Widget } from '@lumino/widgets';
 import '../style/TreeVisualization.css'; // Adjust the path as needed
 // import { toggleCollapse } from './TreeUtils'; // Adjust the path as needed
-import { NotebookPanel } from '@jupyterlab/notebook';
+import { NotebookPanel, NotebookActions } from '@jupyterlab/notebook';
 import CustomNode from './CustomNode';
 // import custom node css from style folder
 import '../style/CustomNode.css';
 import axios from 'axios';
+import LinearProgress from '@mui/material/LinearProgress';
 
 
 var data = {'nodes': [{'id': '1', 'data': {'label': 'Library Imports [1]', 'categoryColor': 'import'}, 'parentNode': 'group_1_2'}, {'id': '2', 'data': {'label': 'Load Dataset [2]', 'categoryColor': 'import'}, 'parentNode': 'group_1_2'}, {'id': '3', 'data': {'label': 'Check Null Values [3]', 'categoryColor': 'wrangle'}}, {'id': '4', 'data': {'label': 'Dataset Shape [4]', 'categoryColor': 'explore'}, 'parentNode': 'group_4_7'}, {'id': '5', 'data': {'label': 'Dataset Info [5]', 'categoryColor': 'explore'}, 'parentNode': 'group_4_7'}, {'id': '6', 'data': {'label': 'Object Data Types [6]', 'categoryColor': 'explore'}, 'parentNode': 'group_4_7'}, {'id': '7', 'data': {'label': 'Value Counts of Attrition [7]', 'categoryColor': 'explore'}, 'parentNode': 'group_4_7'}, {'id': '8', 'data': {'label': 'Encode Attrition [8]', 'categoryColor': 'wrangle'}}, {'id': '9', 'data': {'label': 'Attrition Pie Chart [9]', 'categoryColor': 'explore'}, 'parentNode': 'group_9_15'}, {'id': '10', 'data': {'label': 'Integer Data Types [10]', 'categoryColor': 'explore'}, 'parentNode': 'group_9_15'}, {'id': '11', 'data': {'label': 'Age Distribution [11]', 'categoryColor': 'explore'}, 'parentNode': 'group_9_15'}, {'id': '12', 'data': {'label': 'Top Ages [12]', 'categoryColor': 'explore'}, 'parentNode': 'group_9_15'}, {'id': '13', 'data': {'label': 'Least Common Ages [13]', 'categoryColor': 'explore'}, 'parentNode': 'group_9_15'}, {'id': '14', 'data': {'label': 'Standard Hours Value Counts [14]', 'categoryColor': 'explore'}, 'parentNode': 'group_9_15'}, {'id': '15', 'data': {'label': 'Employee Count Value Counts [15]', 'categoryColor': 'explore'}, 'parentNode': 'group_9_15'}, {'id': '16', 'data': {'label': 'Drop Columns & Correlation Heatmap [16]', 'categoryColor': 'wrangle'}}, {'id': '17', 'data': {'label': 'Years at Company Boxplot [17]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '18', 'data': {'label': 'Business Travel Countplot [18]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '19', 'data': {'label': 'Department Attrition Countplot [19]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '20', 'data': {'label': 'Department Value Counts [20]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '21', 'data': {'label': 'Gender Attrition Countplot [21]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '22', 'data': {'label': 'Job Role Attrition Countplot [22]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '23', 'data': {'label': 'Monthly Income by Job Role [23]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '24', 'data': {'label': 'Education Field Attrition Countplot [24]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '25', 'data': {'label': 'Overtime Attrition Countplot [25]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '26', 'data': {'label': 'Environment Satisfaction Countplot [26]', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '27', 'data': {'label': 'Define Features and Target [27]', 'categoryColor': 'model'}}, {'id': '28', 'data': {'label': 'Encode Categorical Features [28]', 'categoryColor': 'wrangle'}, 'parentNode': 'group_28_29'}, {'id': '29', 'data': {'label': 'Scale Features [29]', 'categoryColor': 'wrangle'}, 'parentNode': 'group_28_29'}, {'id': '30', 'data': {'label': 'Split Dataset [30]', 'categoryColor': 'model'}, 'parentNode': 'group_30_32'}, {'id': '31', 'data': {'label': 'Dataset Shapes After Split [31]', 'categoryColor': 'model'}, 'parentNode': 'group_30_32'}, {'id': '32', 'data': {'label': 'Model Training and Evaluation [32]', 'categoryColor': 'model'}, 'parentNode': 'group_30_32'}, {'id': 'group_1_2', 'data': {'label': 'Dataset Preparation Steps [1-2]', 'categoryColor': 'import'}}, {'id': 'group_4_7', 'data': {'label': 'Initial Data Exploration [4-7]', 'categoryColor': 'explore'}}, {'id': 'group_9_15', 'data': {'label': 'Detailed Data Analysis [9-15]', 'categoryColor': 'explore'}}, {'id': 'group_17_26', 'data': {'label': 'Comprehensive Attrition Insights [17-26]', 'categoryColor': 'explore'}}, {'id': 'group_28_29', 'data': {'label': 'Feature Processing Steps [28-29]', 'categoryColor': 'wrangle'}}, {'id': 'group_30_32', 'data': {'label': 'Model Implementation Cycle [30-32]', 'categoryColor': 'model'}}], 'edges': [{'source': '2', 'target': '3'}, {'source': '2', 'target': '4'}, {'source': '2', 'target': '5'}, {'source': '2', 'target': '6'}, {'source': '2', 'target': '7'}, {'source': '2', 'target': '8'}, {'source': '8', 'target': '9'}, {'source': '8', 'target': '10'}, {'source': '8', 'target': '11'}, {'source': '8', 'target': '12'}, {'source': '8', 'target': '13'}, {'source': '8', 'target': '14'}, {'source': '8', 'target': '15'}, {'source': '8', 'target': '16'}, {'source': '11', 'target': '16'}, {'source': '16', 'target': '17'}, {'source': '16', 'target': '18'}, {'source': '16', 'target': '19'}, {'source': '16', 'target': '21'}, {'source': '16', 'target': '22'}, {'source': '16', 'target': '23'}, {'source': '16', 'target': '24'}, {'source': '16', 'target': '25'}, {'source': '16', 'target': '26'}, {'source': '16', 'target': '27'}, {'source': '17', 'target': '18'}, {'source': '18', 'target': '19'}, {'source': '19', 'target': '20'}, {'source': '19', 'target': '21'}, {'source': '21', 'target': '22'}, {'source': '22', 'target': '23'}, {'source': '23', 'target': '24'}, {'source': '24', 'target': '25'}, {'source': '25', 'target': '26'}, {'source': '26', 'target': '27'}, {'source': '27', 'target': '28'}, {'source': '27', 'target': '29'}, {'source': '27', 'target': '30'}, {'source': '28', 'target': '29'}, {'source': '29', 'target': '30'}, {'source': '30', 'target': '32'}, {'source': '30', 'target': '31'}, {'source': 'group_1_2', 'target': '5'}, {'source': '29', 'target': 'group_30_32'}, {'source': '16', 'target': 'group_17_26'}, {'source': '2', 'target': 'group_4_7'}, {'source': '27', 'target': 'group_28_29'}, {'source': 'group_1_2', 'target': '6'}, {'source': '8', 'target': 'group_9_15'}, {'source': 'group_28_29', 'target': 'group_30_32'}, {'source': 'group_1_2', 'target': 'group_4_7'}, {'source': 'group_1_2', 'target': '3'}, {'source': 'group_1_2', 'target': '7'}, {'source': 'group_17_26', 'target': '27'}, {'source': 'group_1_2', 'target': '8'}, {'source': 'group_9_15', 'target': '16'}, {'source': '27', 'target': 'group_30_32'}, {'source': 'group_1_2', 'target': '4'}, {'source': 'group_28_29', 'target': '30'}]}
@@ -122,6 +123,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
   const nodeTypes = useMemo(() => ({
     customNode: (nodeData: any) => <CustomNode {...nodeData} onAddNode={handleAddNode} getSuggestions={getSuggestions} />
   }), []);
+  console.log("Starting tree visualization")
   
   // data = treeData;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -131,6 +133,8 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
   // data.nodes.forEach((node: any) => {if (!node.parentNode) {node.hidden = true}});
   data.edges.forEach((edge: any) => {edge.type = 'smoothstep', edge.animated = true});
   data.nodes.forEach((node: any) => {node.type = 'customNode'});
+
+  const [isRefresh, setIsRefresh] = useState(false);
 
   useEffect(() => {
     console.log("Rendering tree visualization")
@@ -144,8 +148,6 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
   }, [visibleNodes, visibleEdges]);
 
   const getSuggestions = async (nodeId: string) => {
-    // Logic to determine suggestions based on node
-    // Example of static suggestions:
     console.log(visibleNodes);
     console.log(visibleEdges);
     try{
@@ -166,15 +168,6 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
       console.error("Failed to fetch suggestions:", error);
       return [];
     }
-    
-    
-    
-    
-    // return [
-    //   { id: `suggestion1`, label: 'Next Step A' },
-    //   { id: `suggestion2`, label: 'Next Step B' },
-    //   { id: `suggestion3`, label: 'Next Step C' }
-    // ];
   };
 
   const handleAddNode = (parentId: string, suggestion: any) => {
@@ -245,9 +238,38 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
             <span className="legend-text">{category}</span>
           </div>
         ))}
+        <button className="button-rerun-update" onClick={handleRerunAndUpdateTree}>
+          Rerun and Update Tree
+        </button>
+        {isRefresh && <LinearProgress />} 
       </div>
     );
   };
+
+  const handleRerunAndUpdateTree = async () => {
+    console.log('Rerun and Update Tree button clicked');
+    setIsRefresh(true);
+    // Here you will add your logic to rerun calculations and update the tree
+    // You might need to fetch new data, recalculate positions, or refresh the state
+    await notebookPanel.context.sessionContext.restartKernel();
+    await NotebookActions.runAll(notebookPanel.content, notebookPanel.sessionContext);
+    try{
+      const notebookPath = notebookPanel.context.path; 
+      const response = await axios.post('http://127.0.0.1:5002/get-tree-structure', {
+        filepath: notebookPath
+      }, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 500000 
+      });
+      const treeData = response.data;
+      console.log(treeData);
+    }
+    catch (error) {
+      console.error("Failed to fetch tree", error);
+    }
+    setIsRefresh(false);
+  };
+
 
   return (
     <div style={{ height: 800 }}>
@@ -265,6 +287,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
         <MiniMap />
         <Controls />
         <Background />
+        
       </ReactFlow>
     </div>
   );

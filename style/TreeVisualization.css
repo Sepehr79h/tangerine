@@ -5,6 +5,7 @@
     margin-bottom: 10px;
     background: #f4f4f4;
     border-radius: 4px;
+    position: relative;
   }
   
   .legend-item {
@@ -22,5 +23,21 @@
   
   .legend-text {
     font-size: 14px;
+  }
+
+  /* Styles for the button inside the legend */
+  .button-rerun-update {
+    margin-top: 10px; /* Add some space above the button */
+    padding: 8px 16px;
+    font-size: 14px;
+    color: white;
+    background-color: #eb7b36;
+    border: none;
+    /* border-radius: 3px; */
+    cursor: pointer;
+    /* align-self: center; Center the button within the legend */
+  }
+  .button-rerun-update:hover {
+    background-color: #d67030; /* Darker green on hover */
   }
   
