@@ -200,7 +200,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
       const cellIndex = notebookPanel.content.widgets.findIndex((w) => (w as any).prompt === id);
       if (cellIndex >= 0) {
         notebookPanel.model?.sharedModel.insertCell(cellIndex + 1, {
-          cell_type: 'cell',
+          cell_type: 'code',
           //add sample code here
           source: suggestion.code,
         });
