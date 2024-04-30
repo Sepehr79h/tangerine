@@ -4,14 +4,14 @@ import {
 } from '@jupyterlab/application';
 
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook'; // Import NotebookPanel here
-import { addHeaderToCell } from './header';
+// import { addHeaderToCell } from './header';
 import { createVisualizationPanel } from './visualization';
 import '../style/headerStyle.css';
 import { Widget, Menu } from '@lumino/widgets';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { ICommandPalette } from '@jupyterlab/apputils';
-import { TreeManager } from './TreeManager';
+// import { TreeManager } from './TreeManager';
 // import { createTreeVisualization } from './TreeVisualization';
 // import ReactDOM from 'react-dom';
 import { TreeVisualizationWidget } from './TreeVisualization'; // Adjust the path as needed
@@ -49,7 +49,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       execute: () => {
         const currentNotebookPanel = notebookTracker.currentWidget;
         if (currentNotebookPanel) {
-          updateTreeVisualizationPanel(currentNotebookPanel, treeManager, app);
+          updateTreeVisualizationPanel(currentNotebookPanel, app);
         }
       }
     });
@@ -62,47 +62,47 @@ const plugin: JupyterFrontEndPlugin<void> = {
     tangerineMenu.addItem({ command: commandID });
     tangerineMenu.addItem({ command: treeCommandID });
 
-    const treeManager = new TreeManager();
+    // const treeManager = new TreeManager();
 
-    notebookTracker.widgetAdded.connect((sender, notebookPanel) => {
-      notebookPanel.context.ready.then(() => {
-        if (notebookPanel.model) {
-          // Existing setup code
-          const cellHeaderText = 'My Custom Header';
-          addHeaderToCell(notebookPanel, cellHeaderText, app, updateVisualizationPanel);
-          // notebookPanel.model.contentChanged.connect(() => {
-          //   updateVisualizationPanel(notebookPanel, app);
-          // });
-          // Add listener for cell changes (addition and removal)
-          notebookPanel.model.cells.changed.connect((sender, args) => {
-            if (args.type === 'add') {
-              args.newValues.forEach(cell => {
-                // Assuming JupyterLab provides a unique ID for each cell, use that as the identifier
-                const cellId = cell.id;
-                console.log(cellId);
-                treeManager.addNode(args.newIndex, cellId, cellHeaderText, null);
-                console.log(treeManager.indexIdMap);
-                console.log(treeManager.getTreeSnapshot());
-                //createTreeVisualization(notebookPanel, treeManager, app);
-              });
-              //updateTreeVisualizationPanel(notebookPanel, treeManager, app);
-              //updateVisualizationPanel(notebookPanel, app);
-              //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
-            }
+    // notebookTracker.widgetAdded.connect((sender, notebookPanel) => {
+    //   notebookPanel.context.ready.then(() => {
+    //     if (notebookPanel.model) {
+    //       // Existing setup code
+    //       const cellHeaderText = 'My Custom Header';
+    //       addHeaderToCell(notebookPanel, cellHeaderText, app, updateVisualizationPanel);
+    //       // notebookPanel.model.contentChanged.connect(() => {
+    //       //   updateVisualizationPanel(notebookPanel, app);
+    //       // });
+    //       // Add listener for cell changes (addition and removal)
+    //       notebookPanel.model.cells.changed.connect((sender, args) => {
+    //         if (args.type === 'add') {
+    //           args.newValues.forEach(cell => {
+    //             // Assuming JupyterLab provides a unique ID for each cell, use that as the identifier
+    //             const cellId = cell.id;
+    //             console.log(cellId);
+    //             treeManager.addNode(args.newIndex, cellId, cellHeaderText, null);
+    //             console.log(treeManager.indexIdMap);
+    //             console.log(treeManager.getTreeSnapshot());
+    //             //createTreeVisualization(notebookPanel, treeManager, app);
+    //           });
+    //           //updateTreeVisualizationPanel(notebookPanel, treeManager, app);
+    //           //updateVisualizationPanel(notebookPanel, app);
+    //           //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
+    //         }
           
-            if (args.type === 'remove') {
-              console.log(args);
-              treeManager.removeNode(args.oldIndex);
-              console.log(treeManager.indexIdMap);
-              console.log(treeManager.getTreeSnapshot());
-              //updateTreeVisualizationPanel(notebookPanel, treeManager, app);
-              //updateVisualizationPanel(notebookPanel, app);
-              //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
-            }
-          });
-        }
-      });
-    });
+    //         if (args.type === 'remove') {
+    //           console.log(args);
+    //           treeManager.removeNode(args.oldIndex);
+    //           console.log(treeManager.indexIdMap);
+    //           console.log(treeManager.getTreeSnapshot());
+    //           //updateTreeVisualizationPanel(notebookPanel, treeManager, app);
+    //           //updateVisualizationPanel(notebookPanel, app);
+    //           //updateTreeVisualization(notebookPanel, treeManager.getTreeSnapshot(), app); // Update tree visualization
+    //         }
+    //       });
+    //     }
+    //   });
+    // });
   }
 };
 
@@ -121,7 +121,7 @@ function updateVisualizationPanel(notebookPanel: NotebookPanel, app: JupyterFron
   app.shell.add(visualizationPanel, 'main', { mode: 'split-bottom' });
 }
 
-async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeManager: TreeManager, app: JupyterFrontEnd): Promise<void> {
+async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, app: JupyterFrontEnd): Promise<void> {
   console.log("Updating tree visualization panel")
   const notebookPath = notebookPanel.context.path; 
   console.log(notebookPath)
@@ -140,33 +140,6 @@ async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, treeMa
 
     const treeData = response.data;
     console.log(treeData);
-
-    // const categoryPromises = treeData.nodes.map(async (node: any) => {
-    //   const category = await axios.post('http://127.0.0.1:5002/get-node-category', {
-    //     filepath: notebookPath,
-    //     cellIndex: node.id
-    //   }, {
-    //     headers: { 'Content-Type': 'application/json' },
-    //     timeout: 50000
-    //   });
-    //   console.log("category for node", node.id, ":", category.data);
-    //   node.category = category.data; 
-    // });
-
-    // const headerPromises = treeData.nodes.map(async (node: any) => {
-    //   const header = await axios.post('http://127.0.0.1:5002/get-node-header', {
-    //     filepath: notebookPath,
-    //     cellIndex: node.id
-    //   }, {
-    //     headers: { 'Content-Type': 'application/json' },
-    //     timeout: 50000 
-    //   });
-    //   console.log("header for node", node.id, ":", header.data);
-    //   node.header = header.data; //'import' //category.data;
-    // });
-
-    // await Promise.all(categoryPromises);
-    // await Promise.all(headerPromises);
 
     if (treePanel) {
       // Update the existing panel with the new tree data

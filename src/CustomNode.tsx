@@ -40,8 +40,8 @@ const CustomNode = ({ data, id, onAddNode, getSuggestions }: { data: any, id: an
     setShowSuggestions(false);
   };
   
-  console.log(data);
-  console.log(id);
+  // console.log(data);
+  // console.log(id);
   const backgroundColor = categoryColorMap[data.categoryColor as keyof typeof categoryColorMap] || 'white'; // Default to white if not specified
   const nodeStyle = {
     backgroundColor,
