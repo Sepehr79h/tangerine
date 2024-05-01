@@ -122,14 +122,21 @@ function updateVisualizationPanel(notebookPanel: NotebookPanel, app: JupyterFron
 }
 
 async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, app: JupyterFrontEnd): Promise<void> {
-  console.log("Updating tree visualization panel")
-  const notebookPath = notebookPanel.context.path; 
-  console.log(notebookPath)
+  console.log("Updating tree visualization panel");
+  const notebookPath = notebookPanel.context.path;
   const treePanelId = `tangerine-tree-visualization-${notebookPanel.id}`;
   let treePanel = Array.from(app.shell.widgets()).find(w => w.id === treePanelId) as TreeVisualizationWidget | undefined;
 
-  // Send the notebook path to the backend and fetch the tree data
-  console.log("Fetching tree data for notebook: ", notebookPath)
+  // Initiate loading process if panel exists, otherwise create a new one
+  if (!treePanel) {
+    // Create a new panel and set it to loading
+    const initialData = { nodes: [], edges: [] }; // Assuming initial empty data structure
+    treePanel = new TreeVisualizationWidget({ nodes: initialData.nodes, edges: initialData.edges }, notebookPanel);
+    treePanel.id = treePanelId;
+    app.shell.add(treePanel, 'main', { mode: 'split-right' });
+  }
+
+  console.log("Fetching tree data for notebook: ", notebookPath);
   try {
     const response = await axios.post('http://127.0.0.1:5002/get-tree-structure', {
       filepath: notebookPath
@@ -141,19 +148,14 @@ async function updateTreeVisualizationPanel(notebookPanel: NotebookPanel, app: J
     const treeData = response.data;
     console.log(treeData);
 
-    if (treePanel) {
-      // Update the existing panel with the new tree data
-      treePanel.updateTreeData(treeData);
-    } else {
-      // Create a new panel if it doesn't exist and add it to the JupyterLab shell
-      treePanel = new TreeVisualizationWidget(treeData, notebookPanel);
-      treePanel.id = treePanelId;
-      app.shell.add(treePanel, 'main', { mode: 'split-right' });
-    }
+    // Update the existing panel with the new tree data and stop loading
+    treePanel.updateTreeData(treeData, false);
   } catch (error) {
     console.error("Failed to fetch tree data:", error);
+    treePanel.updateTreeData({ nodes: [], edges: [] }, false); // Stop loading on error
   }
 }
+
 
 
 

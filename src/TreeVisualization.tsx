@@ -89,6 +89,7 @@ export interface TreeVisualizationProps {
 
 class TreeVisualizationWidget extends Widget {
   private treeContainer: HTMLDivElement;
+  private isLoading: boolean; // New state to track loading
 
   constructor(treeData: TreeVisualizationProps['treeData'], private notebookPanel: NotebookPanel) {
     super();
@@ -101,14 +102,17 @@ class TreeVisualizationWidget extends Widget {
     this.treeContainer.id = 'tree-visualization-container';
     this.node.appendChild(this.treeContainer);
 
+    this.isLoading = true; // Initially set to true for loading
     this.renderReactComponent(treeData);
   }
 
   renderReactComponent(treeData: TreeVisualizationProps['treeData']) {
-    ReactDOM.render(<TreeVisualization treeData={treeData} notebookPanel={this.notebookPanel}/>, this.treeContainer);
+    ReactDOM.render(<TreeVisualization treeData={treeData} notebookPanel={this.notebookPanel} isLoading={this.isLoading}/>, this.treeContainer);
   }
 
-  updateTreeData(treeData: TreeVisualizationProps['treeData']) {
+  updateTreeData(treeData: TreeVisualizationProps['treeData'], isLoading: boolean) {
+    this.isLoading = isLoading;
+    console.log(treeData);
     this.renderReactComponent(treeData);
   }
 
@@ -118,14 +122,14 @@ class TreeVisualizationWidget extends Widget {
   }
 }
 
-const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, notebookPanel }) => {
+const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean }> = ({ treeData, notebookPanel, isLoading }) => {
   // Use state hooks for nodes and edges
   const nodeTypes = useMemo(() => ({
     customNode: (nodeData: any) => <CustomNode {...nodeData} onAddNode={handleAddNode} getSuggestions={getSuggestions} />
   }), []);
   console.log("Starting tree visualization")
   
-  // data = treeData;
+  data = treeData;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [visibleNodes, setVisibleNodes] = useState(data.nodes.filter(node => !node.parentNode));
@@ -138,14 +142,24 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
   const [isAddNodeStarted, setIsAddNodeStarted] = useState(false);
 
   useEffect(() => {
+    console.log("treeData updated", data);
+    const newVisibleNodes = data.nodes.filter(node => !node.parentNode);
+    const newVisibleEdges = data.edges.filter(edge => newVisibleNodes.find(node => node.id === edge.source) && newVisibleNodes.find(node => node.id === edge.target));
+    setVisibleNodes(newVisibleNodes);
+    setVisibleEdges(newVisibleEdges);
+  }, [data]);
+
+  useEffect(() => {
     console.log("Rendering tree visualization")
     // Initialize group visibility to false (collapsed) for each group
     console.log(visibleNodes);
     console.log(visibleEdges);
     // Apply Dagre layout to nodes and edges
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(visibleNodes, visibleEdges);
-    setNodes(layoutedNodes);
-    setEdges(layoutedEdges);
+    if (visibleNodes.length > 0 && visibleEdges.length > 0) {
+      const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(visibleNodes, visibleEdges);
+      setNodes(layoutedNodes);
+      setEdges(layoutedEdges);
+    }
   }, [visibleNodes, visibleEdges]);
 
   const getSuggestions = async (nodeId: string) => {
@@ -288,6 +302,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps> = ({ treeData, noteboo
 
   return (
     <div style={{ height: 800 }}>
+      {isLoading && <LinearProgress />}
       <Legend categoryColorMap={categoryColorMap} />
       <ReactFlow
         nodes={nodes}
