@@ -129,7 +129,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
   }), []);
   console.log("Starting tree visualization")
   
-  data = treeData;
+  // data = treeData;
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [visibleNodes, setVisibleNodes] = useState(data.nodes.filter(node => !node.parentNode));
@@ -184,13 +184,37 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
       console.error("Failed to fetch suggestions:", error);
       return [];
     }
+    // return [
+    //   { id: `suggestion1`, label: 'Next Step A', category: 'import'},
+    //   { id: `suggestion2`, label: 'Next Step B', category: 'wrangle'},
+    //   { id: `suggestion3`, label: 'Next Step C', category: 'explore'},
+    // ];
   };
 
-  const handleAddNode = (parentId: string, suggestion: any) => {
+  const handleAddNode = async (parentId: string, suggestion: any) => {
+
+    try{
+      const notebookPath = notebookPanel.context.path; 
+      const response = await axios.post('http://127.0.0.1:5002/get-suggestions-code', {
+        filepath: notebookPath,
+        nodeId: parentId,
+        edges: data.edges,
+        suggestion: suggestion,
+      }, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 500000 
+      });
+      const code = response.data.code;
+      suggestion.code = code;
+      console.log(code);
+    }
+    catch (error) {
+      console.error("Failed to fetch suggestions:", error);
+    }
     // Create new node data
     const newNode = {
       id: `n${Date.now()}`, // Use a timestamp to generate a unique ID
-      data: { label: suggestion.label, onAddNode: handleAddNode, getSuggestions: getSuggestions, categoryColor: suggestion.category }, // Add the missing categoryColor property
+      data: { label: suggestion.label, onAddNode: handleAddNode, getSuggestions: getSuggestions, categoryColor: suggestion.category}, // Add the missing categoryColor property
       position: { x: 250, y: 250 }, // Position should be calculated or defined appropriately
       type: 'customNode',
     };
@@ -202,9 +226,35 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
       type: 'smoothstep',
       animated: true
     };
-    // Add new node and edge to the state
+    // // Add new node and edge to the state
     setVisibleNodes((prevNodes) => [...prevNodes, newNode]);
     setVisibleEdges((prevEdges) => [...prevEdges, newEdge]);
+    // data.nodes.push(newNode);
+    // data.edges.push(newEdge);
+
+
+
+    // //make backend call to get-add-node-tree
+    // try{
+    //   const notebookPath = notebookPanel.context.path; 
+    //   const response = await axios.post('http://127.0.0.1:5002/get-add-node-tree', {
+    //     filepath: notebookPath,
+    //     currTree: data,
+    //     newNode: newNode,
+    //   }, {
+    //     headers: { 'Content-Type': 'application/json' },
+    //     timeout: 500000 
+    //   });
+    //   const updatedTree = response.data;
+    //   console.log(updatedTree);
+    // }
+    // catch (error) {
+    //   console.error("Failed to fetch suggestions:", error);
+    // }
+
+    
+
+
     // Logic to add a new JupyterLab cell goes here
     //if parentId starts with group, create variable and set it to the string after the last underscore
     let id = parentId;
@@ -228,6 +278,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
       }
     }
     setIsAddNodeStarted(false);
+    return true;
   };
 
   const handleNodeClick = (event: any, node: any) => {

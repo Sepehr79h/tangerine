@@ -11,7 +11,7 @@ const categoryColorMap = {
   evaluate: 'LightGoldenRodYellow',
 };
 
-const CustomNode = ({ data, id, onAddNode, getSuggestions }: { data: any, id: any, onAddNode: (id: string, suggestion: any) => void, getSuggestions: (id: string) => any }) => {
+const CustomNode = ({ data, id, onAddNode, getSuggestions }: { data: any, id: any, onAddNode: (id: string, suggestion: any) => any, getSuggestions: (id: string) => any }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,8 +32,16 @@ const CustomNode = ({ data, id, onAddNode, getSuggestions }: { data: any, id: an
   };
 
   const handleSelectSuggestion = (suggestion : any) => {
-    onAddNode(id, suggestion);
-    setShowSuggestions(false);  // Close suggestions modal/dropdown
+    setIsLoading(true);
+    onAddNode(id, suggestion).then(() => {
+      setShowSuggestions(false);
+      setIsLoading(false);
+    }
+    ).catch((error: any) => {
+      console.error("Error adding node: ", error);
+      setShowSuggestions(false);
+      setIsLoading(false);
+    });
   };
 
   const handleCancel = () => {
