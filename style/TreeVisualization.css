@@ -1,50 +1,54 @@
 .legend {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    margin-bottom: 10px;
-    background: #f4f4f4;
-    border-radius: 4px;
-    position: relative;
-  }
-  
-  .legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-  
-  .legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-  
-  .legend-text {
-    font-size: 14px;
-  }
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #f4f4f4;
+  border-radius: 4px;
+}
 
-  /* Styles for the button inside the legend */
-  .button-rerun-update {
-    margin-top: 10px; /* Add some space above the button */
-    padding: 8px 16px;
-    font-size: 14px;
-    color: white;
-    background-color: #eb7b36;
-    border: none;
-    /* border-radius: 3px; */
-    cursor: pointer;
-    /* align-self: center; Center the button within the legend */
-  }
-  .button-rerun-update:hover {
-    background-color: #d67030; /* Darker green on hover */
-  }
-  
-  .react-flow__node {
-    transition: transform 0.3s ease;
-  }
-  
-  .react-flow__edge-path {
-    transition: d 0.3s ease;
-  }
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.legend-text {
+  font-size: 14px;
+}
+
+.button-rerun-update {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: white;
+  background-color: #eb7b36;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.button-rerun-update:hover {
+  background-color: #d67030;
+}
+
+.react-flow__node {
+  transition: transform 0.3s ease;
+}
+
+.react-flow__edge-path {
+  transition: d 0.3s ease;
+}
