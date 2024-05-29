@@ -232,6 +232,9 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
       type: 'smoothstep',
       animated: true
     };
+    //add the new node to the data
+    data.nodes.push(newNode);
+    data.edges.push(newEdge);
     // // Add new node and edge to the state
     setVisibleNodes((prevNodes) => [...prevNodes, newNode]);
     setVisibleEdges((prevEdges) => [...prevEdges, newEdge]);

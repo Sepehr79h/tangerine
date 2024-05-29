@@ -41,3 +41,10 @@
     background-color: #d67030; /* Darker green on hover */
   }
   
+  .react-flow__node {
+    transition: transform 0.3s ease;
+  }
+  
+  .react-flow__edge-path {
+    transition: d 0.3s ease;
+  }
