@@ -3,6 +3,7 @@ import { Handle, Position } from 'react-flow-renderer';
 import LinearProgress from '@mui/material/LinearProgress';
 import { Box } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'; // Import the PlayArrow icon
 
 const categoryColorMap = {
   import: 'LightGreen',
@@ -12,7 +13,7 @@ const categoryColorMap = {
   evaluate: 'LightGoldenRodYellow',
 };
 
-const CustomNode = ({ data, id, onAddNode, getSuggestions, childNodes }: { data: any, id: any, onAddNode: (id: string, suggestion: any) => any, getSuggestions: (id: string) => any, childNodes: any[] }) => {
+const CustomNode = ({ data, id, onAddNode, getSuggestions, childNodes, executeCell }: { data: any, id: any, onAddNode: (id: string, suggestion: any) => any, getSuggestions: (id: string) => any, childNodes: any[], executeCell: (id: string) => void }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,8 +61,11 @@ const CustomNode = ({ data, id, onAddNode, getSuggestions, childNodes }: { data:
   return (
     <div className="custom-node" style={nodeStyle}>
       <Handle type="target" position={Position.Top} />
-      <div>{data.label}</div>
+      <div>[{id}] {data.label}</div>
       <button onClick={handleAddClick} className="add-node-button">+</button>
+      <button onClick={() => executeCell(id)} className="execute-node-button">
+        <PlayArrowIcon fontSize="small"/> 
+      </button>
       {isLoading ? (
         <Box sx={{ width: '100%' }}> {/* Ensure LinearProgress is fully visible */}
           <LinearProgress sx={{ height: 5, borderRadius: 5 }} color="primary" /> {/* Increase height and add color */}

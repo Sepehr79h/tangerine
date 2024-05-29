@@ -4,7 +4,7 @@
   align-items: center; /* Center children horizontally */
   justify-content: center; /* Center children vertically */
   border: 1px solid black;
-  padding: 10px;
+  padding: 15px;
   border-radius: 5px;
   background: white;
   position: relative; /* Positioning context for absolute children */
@@ -102,4 +102,23 @@
 
 .child-label-item:hover {
   background-color: #f0f0f0;
+}
+
+.custom-node .execute-node-button {
+  background-color: transparent;
+  color: black;
+  border: none;
+  padding-bottom: 4px;
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  left: 1px;
+}
+
+.custom-node .execute-node-button:hover {
+  color: #4CAF50; /* Black text on hover */
+}
+
+.custom-node .execute-node-button svg {
+  margin-right: 4px; /* Add some space between the icon and text */
 }
