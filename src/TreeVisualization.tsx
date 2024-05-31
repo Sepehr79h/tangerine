@@ -349,38 +349,82 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
   };
 
   const executeCell = async (id: string) => {
-    console.log("Executing code cell");
-    if (notebookPanel) {
-        const cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === id) as any;
-        await notebookPanel.content.scrollToCell(cell);
-        console.log(cell);
-        if (cell) {
-            await NotebookActions.run(notebookPanel.content, notebookPanel.sessionContext);
-            const newId = (cell as any).prompt;
+    console.log("Executing code cell(s)");
+    var newId : any;
 
+    if (notebookPanel) {
+        // Helper function to execute a single cell and update nodes and edges
+        const executeSingleCell = async (cellId: string) => {
+            const cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === cellId) as any;
+            await notebookPanel.content.scrollToCell(cell);
+            console.log(cell);
+            if (cell) {
+                await NotebookActions.run(notebookPanel.content, notebookPanel.sessionContext);
+                await notebookPanel.context.save();
+                newId = (cell as any).prompt;
+
+                // Update the node and edges state so that the node id is updated to the new id
+                setNodes((prevNodes) => 
+                    prevNodes.map((node) => 
+                        node.id === cellId 
+                            ? { ...node, id: newId}
+                            : node
+                    )
+                );
+
+                setEdges((prevEdges) => 
+                    prevEdges.map((edge) => {
+                        if (edge.source === cellId) {
+                            return { ...edge, source: newId, id: `e${newId}-${edge.target}` };
+                        } else if (edge.target === cellId) {
+                            return { ...edge, target: newId, id: `e${edge.source}-${newId}` };
+                        } else {
+                            return edge;
+                        }
+                    })
+                );            
+            }
+        };
+
+        // Check if id represents a group of cells
+        if (id.startsWith('group_')) {
+            const cellRange = id.replace('group_', '').split('_').map(Number);
+            const start = cellRange[0];
+            const end = cellRange[cellRange.length - 1];
+            // Execute each cell in the range
+            for (let cellId = start; cellId <= end; cellId++) {
+                await executeSingleCell(cellId.toString());
+            }
+            var diff: number = end - start;
+            const new_start = Number(newId) - diff;
+            const newGroupId = `group_${new_start.toString()}_${newId}`;
             // Update the node and edges state so that the node id is updated to the new id
             setNodes((prevNodes) => 
                 prevNodes.map((node) => 
                     node.id === id 
-                        ? { ...node, id: newId}
+                        ? { ...node, id: newGroupId}
                         : node
                 )
             );
-
             setEdges((prevEdges) => 
                 prevEdges.map((edge) => {
                     if (edge.source === id) {
-                        return { ...edge, source: newId, id: `e${newId}-${edge.target}` };
+                        return { ...edge, source: newGroupId, id: `e${newGroupId}-${edge.target}` };
                     } else if (edge.target === id) {
-                        return { ...edge, target: newId, id: `e${edge.source}-${newId}` };
+                        return { ...edge, target: newGroupId, id: `e${edge.source}-${newGroupId}` };
                     } else {
                         return edge;
                     }
                 })
-            );            
+            );  
+
+        } else {
+            // Execute single cell
+            await executeSingleCell(id);
         }
-    }
-};
+    } 
+  };
+
 
 
 
