@@ -238,7 +238,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
     }
     // Create new node data
     const newNode = {
-      id: `n${Date.now()}`, // Use a timestamp to generate a unique ID
+      id: "*", //`n${Date.now()}`, // Use a timestamp to generate a unique ID
       data: { label: suggestion.label, onAddNode: handleAddNode, getSuggestions: getSuggestions, categoryColor: suggestion.category}, // Add the missing categoryColor property
       position: { x: 250, y: 250 }, // Position should be calculated or defined appropriately
       type: 'customNode',
@@ -320,7 +320,8 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
         const cell = notebookPanel.content.widgets[cellIndex + 1];
         console.log(cell);
         if (cell) {
-          notebookPanel.content.scrollToCell(cell);
+          await notebookPanel.content.scrollToCell(cell);
+          await executeCell(newNode.id, cell);
           // await NotebookActions.run(notebookPanel.content, notebookPanel.sessionContext);
         }
       }
@@ -348,16 +349,20 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
     // setIsAddNodeStarted(false);
   };
 
-  const executeCell = async (id: string) => {
+  const executeCell = async (id: string, cell?: any) => {
     console.log("Executing code cell(s)");
     var newId : any;
 
     if (notebookPanel) {
         // Helper function to execute a single cell and update nodes and edges
         const executeSingleCell = async (cellId: string) => {
-            const cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === cellId) as any;
-            await notebookPanel.content.scrollToCell(cell);
-            console.log(cell);
+            console.log(cell)
+            if (!cell) {
+              console.log("Retrieving cell");
+              cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === cellId) as any;
+              await notebookPanel.content.scrollToCell(cell);
+              console.log(cell);
+            }
             if (cell) {
                 await NotebookActions.run(notebookPanel.content, notebookPanel.sessionContext);
                 await notebookPanel.context.save();
@@ -384,6 +389,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
                     })
                 );            
             }
+            cell = undefined;
         };
 
         // Check if id represents a group of cells
@@ -423,6 +429,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
             await executeSingleCell(id);
         }
     } 
+    return true;
   };
 
 
@@ -447,6 +454,10 @@ const Legend = ({ categoryColorMap }: { categoryColorMap: Record<string, string>
         <div className="legend-item">
           <PlayArrowIcon />
           <span className="legend-text">Execute Node</span>
+        </div>
+        <div className="legend-item">
+          <span className="legend-add-icon" title="Indicates adding a new node">+</span>
+          <span className="legend-text">Add Node</span>
         </div>
       </div>
       <button className="button-rerun-update" onClick={handleRerunAndUpdateTree}>

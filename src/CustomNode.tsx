@@ -13,7 +13,7 @@ const categoryColorMap = {
   evaluate: 'LightGoldenRodYellow',
 };
 
-const CustomNode = ({ data, id, onAddNode, getSuggestions, childNodes, executeCell }: { data: any, id: any, onAddNode: (id: string, suggestion: any) => any, getSuggestions: (id: string) => any, childNodes: any[], executeCell: (id: string) => void }) => {
+const CustomNode = ({ data, id, onAddNode, getSuggestions, childNodes, executeCell }: { data: any, id: any, onAddNode: (id: string, suggestion: any) => any, getSuggestions: (id: string) => any, childNodes: any[], executeCell: (id: string) => any }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +50,17 @@ const CustomNode = ({ data, id, onAddNode, getSuggestions, childNodes, executeCe
   const handleCancel = () => {
     setShowSuggestions(false);
   };
+
+  const handleExecute = (id: string) => {
+    setIsLoading(true);
+    executeCell(id).then(() => {
+      setIsLoading(false);
+    }).catch((error: any) => {
+      console.error("Error executing cell: ", error);
+      setIsLoading(false);
+    });
+  }
+  
   
   // console.log(data);
   // console.log(id);
@@ -62,8 +73,8 @@ const CustomNode = ({ data, id, onAddNode, getSuggestions, childNodes, executeCe
     <div className="custom-node" style={nodeStyle}>
       <Handle type="target" position={Position.Top} />
       <div>[{id}] {data.label}</div>
-      <button onClick={handleAddClick} className="add-node-button">+</button>
-      <button onClick={() => executeCell(id)} className="execute-node-button">
+      <button onClick={handleAddClick} className="add-node-button" title="Click to add a new node">+</button>
+      <button onClick={() => handleExecute(id)} className="execute-node-button">
         <PlayArrowIcon fontSize="small"/> 
       </button>
       {isLoading ? (
