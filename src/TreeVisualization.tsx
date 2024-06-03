@@ -114,7 +114,6 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isRefresh, setIsRefresh] = useState(false);
-  const [isAddNodeStarted, setIsAddNodeStarted] = useState(false);
   // Use state hooks for nodes and edges
   const nodeTypes = useMemo(() => ({
     customNode: (nodeData: any) => {
@@ -188,7 +187,6 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
   
 
   const getSuggestions = async (nodeId: string) => {
-    setIsAddNodeStarted(true);
     console.log(nodes);
     console.log(edges);
     console.log(edgesRef.current);
@@ -326,7 +324,6 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
         }
       }
     }
-    setIsAddNodeStarted(false);
     return true;
   };
 
@@ -342,7 +339,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
         cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === group);
         console.log(group, cell);
       }
-      if (cell && isAddNodeStarted===false) {
+      if (cell) {
         notebookPanel.content.scrollToCell(cell);
       }
     }
