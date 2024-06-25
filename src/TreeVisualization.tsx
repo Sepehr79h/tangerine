@@ -341,24 +341,24 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean;
     return true;
   };
 
-  const handleNodeClick = (event: any, node: any) => {
-    console.log('Clicked node:', node);
-    // Handle the notebook panel logic as before
-    if (notebookPanel) {
-      console.log(notebookPanel.content.widgets);
-      // if node.id starts with 'group_', scroll to the integer after 'group_'
-      var cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === node.id);
-      if (node.id.startsWith('group_')) {
-        const group = node.id.split('_')[1]
-        cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === group);
-        console.log(group, cell);
-      }
-      if (cell) {
-        notebookPanel.content.scrollToCell(cell);
-      }
-    }
-    // setIsAddNodeStarted(false);
-  };
+  // const handleNodeClick = (event: any, node: any) => {
+  //   console.log('Clicked node:', node);
+  //   // Handle the notebook panel logic as before
+  //   if (notebookPanel) {
+  //     console.log(notebookPanel.content.widgets);
+  //     // if node.id starts with 'group_', scroll to the integer after 'group_'
+  //     var cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === node.id);
+  //     if (node.id.startsWith('group_')) {
+  //       const group = node.id.split('_')[1]
+  //       cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === group);
+  //       console.log(group, cell);
+  //     }
+  //     if (cell) {
+  //       notebookPanel.content.scrollToCell(cell);
+  //     }
+  //   }
+  //   // setIsAddNodeStarted(false);
+  // };
 
   const executeCell = async (id: string, cell?: any) => {
     console.log("Executing code cell(s)");
@@ -522,7 +522,7 @@ const Legend = ({ categoryColorMap }: { categoryColorMap: Record<string, string>
         edges={edgesRef.current}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeClick={handleNodeClick}
+        // onNodeClick={handleNodeClick}
         nodeTypes={nodeTypes}
         connectionLineType={ConnectionLineType.SmoothStep}
         fitView

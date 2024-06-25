@@ -26,6 +26,7 @@ const CustomNode = ({
   const [showChildLabels, setShowChildLabels] = useState(false);
   const [cellOutput, setCellOutput] = useState<string | null>(null); // State to store cell output
   const [outputType, setOutputType] = useState<string | null>(null); // State to store output type
+  const [customQuery, setCustomQuery] = useState(''); // State to store custom query
 
   const handleAddClick = () => {
     setIsLoading(true);
@@ -85,6 +86,10 @@ const CustomNode = ({
     }
   };
 
+  const handleCustomQuerySubmit = async () => {
+    handleSelectSuggestion({ label: customQuery, category: 'custom' });
+  };
+
   const backgroundColor = categoryColorMap[data.categoryColor as keyof typeof categoryColorMap] || 'white'; // Default to white if not specified
   const nodeStyle = {
     backgroundColor,
@@ -113,6 +118,15 @@ const CustomNode = ({
                 {suggestion.label}
               </div>
             ))}
+            <div className="suggestion-item custom-query">
+              <input
+                type="text"
+                placeholder="Enter custom query"
+                value={customQuery}
+                onChange={(e) => setCustomQuery(e.target.value)}
+              />
+              <button onClick={handleCustomQuerySubmit}>Submit</button>
+            </div>
             <div onClick={handleCancel} className="suggestion-item" style={{textAlign: 'center', color: 'red'}}>
               Cancel
             </div>
