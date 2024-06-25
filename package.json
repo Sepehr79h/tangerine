@@ -60,6 +60,8 @@
         "@emotion/styled": "^11.11.5",
         "@jupyterlab/application": "^4.0.0",
         "@jupyterlab/mainmenu": "^4.0.10",
+        "@jupyterlab/outputarea": "^4.2.2",
+        "@jupyterlab/rendermime": "^4.2.2",
         "@mui/icons-material": "^5.15.17",
         "@mui/material": "^5.15.17",
         "add": "^2.0.6",

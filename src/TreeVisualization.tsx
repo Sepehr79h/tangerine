@@ -20,6 +20,7 @@ import axios from 'axios';
 import LinearProgress from '@mui/material/LinearProgress';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+// import { OutputArea, SimplifiedOutputArea } from '@jupyterlab/outputarea';
 
 var data = {'nodes': [{'id': '1', 'data': {'label': 'Import libraries', 'categoryColor': 'import'}}, {'id': '2', 'data': {'label': 'Load dataset', 'categoryColor': 'wrangle'}, 'parentNode': 'group_2_6'}, {'id': '3', 'data': {'label': 'Check missing values', 'categoryColor': 'wrangle'}, 'parentNode': 'group_2_6'}, {'id': '4', 'data': {'label': 'Dataset shape', 'categoryColor': 'wrangle'}, 'parentNode': 'group_2_6'}, {'id': '5', 'data': {'label': 'Dataset info', 'categoryColor': 'wrangle'}, 'parentNode': 'group_2_6'}, {'id': '6', 'data': {'label': 'Check object types', 'categoryColor': 'wrangle'}, 'parentNode': 'group_2_6'}, {'id': '7', 'data': {'label': 'Attrition value counts', 'categoryColor': 'explore'}}, {'id': '8', 'data': {'label': 'Encode Attrition', 'categoryColor': 'wrangle'}}, {'id': '9', 'data': {'label': 'Attrition pie chart', 'categoryColor': 'explore'}}, {'id': '10', 'data': {'label': 'Check int64 types', 'categoryColor': 'wrangle'}}, {'id': '11', 'data': {'label': 'Age distribution', 'categoryColor': 'explore'}, 'parentNode': 'group_11_15'}, {'id': '12', 'data': {'label': 'Top 10 ages', 'categoryColor': 'explore'}, 'parentNode': 'group_11_15'}, {'id': '13', 'data': {'label': 'Least common ages', 'categoryColor': 'explore'}, 'parentNode': 'group_11_15'}, {'id': '14', 'data': {'label': 'StandardHours counts', 'categoryColor': 'explore'}, 'parentNode': 'group_11_15'}, {'id': '15', 'data': {'label': 'EmployeeCount counts', 'categoryColor': 'explore'}, 'parentNode': 'group_11_15'}, {'id': '16', 'data': {'label': 'Drop columns and heatmap', 'categoryColor': 'wrangle'}}, {'id': '17', 'data': {'label': 'YearsAtCompany boxplot', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '18', 'data': {'label': 'BusinessTravel vs Attrition', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '19', 'data': {'label': 'Department vs Attrition', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '20', 'data': {'label': 'Department counts', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '21', 'data': {'label': 'Gender vs Attrition', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '22', 'data': {'label': 'JobRole vs Attrition', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '23', 'data': {'label': 'JobRole vs MonthlyIncome', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '24', 'data': {'label': 'EducationField vs Attrition', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '25', 'data': {'label': 'OverTime vs Attrition', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '26', 'data': {'label': 'EnvironmentSatisfaction counts', 'categoryColor': 'explore'}, 'parentNode': 'group_17_26'}, {'id': '27', 'data': {'label': 'Define features and target', 'categoryColor': 'wrangle'}, 'parentNode': 'group_27_31'}, {'id': '28', 'data': {'label': 'Encode categorical features', 'categoryColor': 'wrangle'}, 'parentNode': 'group_27_31'}, {'id': '29', 'data': {'label': 'Scale features', 'categoryColor': 'wrangle'}, 'parentNode': 'group_27_31'}, {'id': '30', 'data': {'label': 'Train-test split', 'categoryColor': 'wrangle'}, 'parentNode': 'group_27_31'}, {'id': '31', 'data': {'label': 'Print dataset shapes', 'categoryColor': 'wrangle'}, 'parentNode': 'group_27_31'}, {'id': '32', 'data': {'label': 'Train and evaluate models', 'categoryColor': 'model'}}, {'id': 'group_2_6', 'data': {'label': 'Initial Dataset Preparation', 'categoryColor': 'wrangle'}}, {'id': 'group_11_15', 'data': {'label': 'Employee Demographics Analysis', 'categoryColor': 'explore'}}, {'id': 'group_17_26', 'data': {'label': 'Attrition Factors Exploration', 'categoryColor': 'explore'}}, {'id': 'group_27_31', 'data': {'label': 'Feature Engineering Steps', 'categoryColor': 'wrangle'}}], 'edges': [{'source': '2', 'target': '3'}, {'source': '2', 'target': '4'}, {'source': '2', 'target': '5'}, {'source': '2', 'target': '6'}, {'source': '2', 'target': '7'}, {'source': '2', 'target': '8'}, {'source': '8', 'target': '9'}, {'source': '8', 'target': '10'}, {'source': '8', 'target': '11'}, {'source': '8', 'target': '12'}, {'source': '8', 'target': '13'}, {'source': '8', 'target': '14'}, {'source': '8', 'target': '15'}, {'source': '8', 'target': '16'}, {'source': '11', 'target': '16'}, {'source': '16', 'target': '17'}, {'source': '16', 'target': '18'}, {'source': '16', 'target': '19'}, {'source': '16', 'target': '21'}, {'source': '16', 'target': '22'}, {'source': '16', 'target': '23'}, {'source': '16', 'target': '24'}, {'source': '16', 'target': '25'}, {'source': '16', 'target': '26'}, {'source': '16', 'target': '27'}, {'source': '17', 'target': '18'}, {'source': '18', 'target': '19'}, {'source': '19', 'target': '20'}, {'source': '19', 'target': '21'}, {'source': '21', 'target': '22'}, {'source': '22', 'target': '23'}, {'source': '23', 'target': '24'}, {'source': '24', 'target': '25'}, {'source': '25', 'target': '26'}, {'source': '26', 'target': '27'}, {'source': '27', 'target': '28'}, {'source': '27', 'target': '29'}, {'source': '27', 'target': '30'}, {'source': '28', 'target': '29'}, {'source': '29', 'target': '30'}, {'source': '30', 'target': '32'}, {'source': '30', 'target': '31'}, {'source': 'group_11_15', 'target': '16'}, {'source': 'group_2_6', 'target': '8'}, {'source': '16', 'target': 'group_27_31'}, {'source': 'group_2_6', 'target': '7'}, {'source': 'group_17_26', 'target': 'group_27_31'}, {'source': '8', 'target': 'group_11_15'}, {'source': 'group_27_31', 'target': '32'}, {'source': '26', 'target': 'group_27_31'}, {'source': '16', 'target': 'group_17_26'}, {'source': 'group_17_26', 'target': '27'}]}
 
@@ -95,7 +96,7 @@ class TreeVisualizationWidget extends Widget {
   }
 
   renderReactComponent(treeData: TreeVisualizationProps['treeData']) {
-    ReactDOM.render(<TreeVisualization treeData={treeData} notebookPanel={this.notebookPanel} isLoading={this.isLoading}/>, this.treeContainer);
+    ReactDOM.render(<TreeVisualization treeData={treeData} notebookPanel={this.notebookPanel} isLoading={this.isLoading} />, this.treeContainer);
   }
 
   updateTreeData(treeData: TreeVisualizationProps['treeData'], isLoading: boolean) {
@@ -110,7 +111,7 @@ class TreeVisualizationWidget extends Widget {
   }
 }
 
-const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean }> = ({ treeData, notebookPanel, isLoading }) => {
+const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean; }> = ({ treeData, notebookPanel, isLoading}) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isRefresh, setIsRefresh] = useState(false);
@@ -118,7 +119,9 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
   const nodeTypes = useMemo(() => ({
     customNode: (nodeData: any) => {
       const childNodes = data.nodes.filter(node => node.parentNode === nodeData.id);
-      return <CustomNode {...nodeData} onAddNode={handleAddNode} getSuggestions={getSuggestions} childNodes={childNodes} executeCell={executeCell} />;
+      //return <CustomNode {...nodeData} onAddNode={handleAddNode} getSuggestions={getSuggestions} childNodes={childNodes} executeCell={executeCell} />;
+
+      return <CustomNode {...nodeData} onAddNode={handleAddNode} getSuggestions={getSuggestions} childNodes={childNodes} executeCell={executeCell} getCellOutput={getCellOutput} notebookPanel={notebookPanel} />;
     }
   }), []);
   console.log("Starting tree visualization")
@@ -127,34 +130,45 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
   
   // data = treeData;
 
-  // const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  // const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  // // const [visibleNodes, setVisibleNodes] = useState(data.nodes.filter(node => !node.parentNode));
-  // // const [visibleEdges, setVisibleEdges] = useState(data.edges.filter(edge => visibleNodes.find(node => node.id === edge.source) && visibleNodes.find(node => node.id === edge.target)));
-  
-  // const [isRefresh, setIsRefresh] = useState(false);
-  // const [isAddNodeStarted, setIsAddNodeStarted] = useState(false);
-  
-  // useEffect(() => {
-  //   console.log("treeData updated", data);
-  //   const newVisibleNodes = data.nodes.filter(node => !node.parentNode);
-  //   const newVisibleEdges = data.edges.filter(edge => newVisibleNodes.find(node => node.id === edge.source) && newVisibleNodes.find(node => node.id === edge.target));
-  //   setVisibleNodes(newVisibleNodes);
-  //   setVisibleEdges(newVisibleEdges);
-  // }, [data]);
-
-  // useEffect(() => {
-  //   console.log("Rendering tree visualization")
-  //   // Initialize group visibility to false (collapsed) for each group
-  //   console.log(visibleNodes);
-  //   console.log(visibleEdges);
-  //   // Apply Dagre layout to nodes and edges
-  //   if (visibleNodes.length > 0 && visibleEdges.length > 0) {
-  //     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(visibleNodes, visibleEdges);
-  //     setNodes(layoutedNodes);
-  //     setEdges(layoutedEdges);
+  // async function getCellOutput(notebookPanel: NotebookPanel, id: string, rendermime: IRenderMimeRegistry): Promise<Widget> {
+  //   const cell = notebookPanel.content.widgets.find((w) => (w as any).prompt === id) as any;
+  //   if (cell && cell.model) {
+  //     console.log(rendermime);
+  //     console.log(cell);
+  //     console.log(cell.outputArea.model);
+  //     console.log(cell.outputArea.model.list);
+  //     const outputArea = new SimplifiedOutputArea({
+  //       rendermime,
+  //       contentFactory: OutputArea.defaultContentFactory,
+  //       model: cell.outputArea.model,  // Include the model here
+  //     });
+  //     const widget = new Widget();
+  //     widget.node.appendChild(outputArea.node);
+  //     await outputArea.model.changed; // Wait for the model to reflect the output changes
+  //     return widget;
   //   }
-  // }, [visibleNodes, visibleEdges]);
+  //   throw new Error('Cell output not found');
+  // }
+  const getCellOutput = async (notebookPanel: NotebookPanel, id: string) => {
+    try {
+      const notebookPath = notebookPanel.context.path; 
+      const response = await axios.post('https://backend.loca.lt/get-outputs', {
+        filepath: notebookPath,
+        nodeId: id,
+      }, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 500000 
+      });
+      const result = response.data;
+      console.log(result);
+      return { data: result.data, output_type: result.output_type };
+    } catch (error) {
+      console.error("Failed to fetch outputs:", error);
+      return { data: null, output_type: null };
+    }
+  };
+  
+  
 
   const edgesRef = useRef(edges);
   const nodesRef = useRef(nodes);
@@ -192,7 +206,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
     console.log(edgesRef.current);
     try{
       const notebookPath = notebookPanel.context.path; 
-      const response = await axios.post('http://127.0.0.1:5002/get-suggestions', {
+      const response = await axios.post('https://backend.loca.lt/get-suggestions', {
         filepath: notebookPath,
         nodeId: nodeId,
         edges: edgesRef.current
@@ -218,7 +232,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
   const handleAddNode = async (parentId: string, suggestion: any) => {
     try{
       const notebookPath = notebookPanel.context.path; 
-      const response = await axios.post('http://127.0.0.1:5002/get-suggestions-code', {
+      const response = await axios.post('https://backend.loca.lt/get-suggestions-code', {
         filepath: notebookPath,
         nodeId: parentId,
         edges: edgesRef.current,
@@ -282,7 +296,7 @@ const TreeVisualization: React.FC<TreeVisualizationProps & { isLoading: boolean 
     // //make backend call to get-add-node-tree
     // try{
     //   const notebookPath = notebookPanel.context.path; 
-    //   const response = await axios.post('http://127.0.0.1:5002/get-add-node-tree', {
+    //   const response = await axios.post('https://backend.loca.lt/get-add-node-tree', {
     //     filepath: notebookPath,
     //     currTree: data,
     //     newNode: newNode,
@@ -476,7 +490,7 @@ const Legend = ({ categoryColorMap }: { categoryColorMap: Record<string, string>
       await notebookPanel.context.sessionContext.restartKernel();
       await NotebookActions.runAll(notebookPanel.content, notebookPanel.sessionContext);
       const notebookPath = notebookPanel.context.path; 
-      const response = await axios.post('http://127.0.0.1:5002/get-tree-structure', {
+      const response = await axios.post('https://backend.loca.lt/get-tree-structure', {
         filepath: notebookPath
       }, {
         headers: { 'Content-Type': 'application/json' },

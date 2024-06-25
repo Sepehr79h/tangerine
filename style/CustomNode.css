@@ -122,3 +122,36 @@
 .custom-node .execute-node-button svg {
   margin-right: 4px; /* Add some space between the icon and text */
 }
+
+.cell-output {
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  width: 100%;
+  max-width: 400px;
+  overflow: auto;
+}
+
+.cell-output h2 {
+  margin-top: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.cell-output .output-content {
+  margin-top: 10px;
+}
+
+.cell-output img {
+  max-width: 100%;
+  height: auto;
+}
+
+.cell-output pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 12px;
+  color: #333;
+}

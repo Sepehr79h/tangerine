@@ -17,7 +17,6 @@ import { ICommandPalette } from '@jupyterlab/apputils';
 import { TreeVisualizationWidget } from './TreeVisualization'; // Adjust the path as needed
 import axios from 'axios';
 
-
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab_tangerine:plugin',
   requires: [INotebookTracker, IMainMenu, ICommandPalette],
@@ -26,7 +25,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     app: JupyterFrontEnd, 
     notebookTracker: INotebookTracker, 
     mainMenu: IMainMenu, 
-    commandPalette: ICommandPalette
+    commandPalette: ICommandPalette,
   ) => {
     console.log('JupyterLab extension jupyterlab_tangerine is activated!');
 
