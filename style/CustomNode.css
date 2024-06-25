@@ -123,6 +123,25 @@
   margin-right: 4px; /* Add some space between the icon and text */
 }
 
+.custom-node .view-output-button {
+  background-color: transparent;
+  color: black;
+  border: none;
+  padding-bottom: 4px;
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  left: 30px;
+}
+
+.custom-node .view-output-button:hover {
+  color: #4CAF50; /* Black text on hover */
+}
+
+.custom-node .view-output-button svg {
+  margin-right: 4px; /* Add some space between the icon and text */
+}
+
 .cell-output {
   margin-top: 10px;
   border: 1px solid #ddd;
