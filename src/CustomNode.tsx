@@ -98,7 +98,7 @@ const CustomNode = ({
   return (
     <div className="custom-node" style={nodeStyle}>
       <Handle type="target" position={Position.Top} />
-      <div>[{id}] {data.label}</div>
+      <div className="node-label">[{id}] {data.label}</div>
       <button onClick={handleAddClick} className="add-node-button" title="Click to add a new node">+</button>
       <button onClick={() => handleExecute(id)} className="execute-node-button">
         <PlayArrowIcon fontSize="small"/> 
@@ -121,13 +121,14 @@ const CustomNode = ({
             <div className="suggestion-item custom-query">
               <input
                 type="text"
+                className="custom-query-input"
                 placeholder="Enter custom query"
                 value={customQuery}
                 onChange={(e) => setCustomQuery(e.target.value)}
               />
-              <button onClick={handleCustomQuerySubmit}>Submit</button>
+              <button onClick={handleCustomQuerySubmit} className="custom-query-submit">Submit</button>
             </div>
-            <div onClick={handleCancel} className="suggestion-item" style={{textAlign: 'center', color: 'red'}}>
+            <div onClick={handleCancel} className="suggestion-item cancel-item">
               Cancel
             </div>
           </div>

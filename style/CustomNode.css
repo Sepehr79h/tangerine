@@ -174,3 +174,35 @@
   font-size: 12px;
   color: #333;
 }
+
+.custom-query-input {
+  width: calc(100% - 20px);
+  padding: 5px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.custom-query-submit {
+  padding: 5px 10px;
+  margin: 5px;
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.custom-query-submit:hover {
+  background-color: #0056b3;
+}
+
+.suggestion-item.custom-query {
+  background-color: #e5f0fd; /* Light gray background */
+}
+
+.suggestion-item.cancel-item {
+  color: red;
+}
